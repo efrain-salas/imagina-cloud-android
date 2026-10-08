@@ -94,3 +94,6 @@ jacoco/
 # python
 **/__pycache__/
 /gradle/verification-keyring.gpg
+
+# Imagina Cloud: local parameter overrides
+imagina/imagina.local.properties

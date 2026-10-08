@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Imagina Cloud branding (see IMAGINA.md). Overrides app/src/main/res/values/setup.xml for the
+  "imagina" flavor; keys left out keep Nextcloud's value. The login URL and the push server come
+  from imagina/imagina.properties (imagina/flavor.gradle).
+-->
+<resources>
+    <!-- Name and identifiers: unique, so the app can live next to the official Nextcloud app -->
+    <string name="app_name">Imagina Cloud</string>
+    <string name="account_type">build.imagina.cloud</string>
+    <string name="authority">build.imagina.cloud.provider</string>
+    <string name="users_and_groups_search_authority">build.imagina.cloud.providers.UsersAndGroupsSearchProvider</string>
+    <string name="users_and_groups_share_with">build.imagina.cloud.providers.UsersAndGroupsSearchProvider.action.SHARE_WITH</string>
+    <string name="document_provider_authority">build.imagina.cloud.documents</string>
+    <string name="file_provider_authority">build.imagina.cloud.files</string>
+    <string name="image_cache_provider_authority">build.imagina.cloud.imageCache.provider</string>
+    <string name="db_file">imagina-cloud.db</string>
+    <string name="db_name">imagina-cloud</string>
+    <string name="data_folder">imagina-cloud</string>
+    <string name="default_display_name_for_root_folder">Imagina Cloud</string>
+    <string name="name_for_branded_user_agent">Imagina Cloud</string>
+
+    <!-- One server, one account: the person signs in with Imagina, never types a server -->
+    <bool name="show_server_url_input">false</bool>
+    <bool name="show_provider_or_own_installation">false</bool>
+    <string name="provider_registration_server"></string>
+    <bool name="disable_intro">true</bool>
+    <bool name="disable_multiaccount">true</bool>
+    <bool name="multiaccount_support">false</bool>
+    <bool name="is_branded_client">true</bool>
+
+
+    <!-- Imagina's Cloud has no calendar or contacts (docs/PLAN_CLOUD.md) -->
+    <bool name="show_calendar_backup">false</bool>
+    <bool name="davdroid_integration_enabled">false</bool>
+
+    <!-- Nextcloud's own pages and programmes do not apply to Imagina Cloud -->
+    <bool name="show_whats_new">false</bool>
+    <bool name="recommend_enabled">false</bool>
+    <bool name="participate_enabled">false</bool>
+    <bool name="help_enabled">false</bool>
+    <bool name="privacy_enabled">false</bool>
+    <string name="url_server_install"></string>
+    <string name="url_app_download">"https://play.google.com/store/apps/details?id=build.imagina.cloud"</string>
+    <!-- GPL: the source of this modified app must stay available -->
+    <string name="sourcecode_url" translatable="false">https://github.com/efrain-salas/imagina-cloud-android</string>
+
+    <!-- Imagina's colours (resources/ui/tokens.css): accent #0F766E, accent-hover #115E59 -->
+    <color name="primary">#0F766E</color>
+    <color name="primary_dark">#115E59</color>
+    <color name="color_accent">#0F766E</color>
+    <color name="login_text_color">#ffffff</color>
+    <color name="login_text_hint_color">#CCFBF1</color>
+</resources>

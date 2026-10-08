@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="imagina_sign_in_failed">No se ha podido entrar con Imagina. Vuelve a intentarlo.</string>
+    <!-- Untranslated in Nextcloud (translatable="false"); Imagina speaks Spanish -->
+    <string name="placeholder_search_in_nextcloud" translatable="false">Buscar en Imagina Cloud</string>
+</resources>

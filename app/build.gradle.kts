@@ -549,3 +549,6 @@ dependencies {
     // kotlinx.serialization
     implementation(libs.kotlinx.serialization.json)
 }
+
+// Imagina Cloud flavor (IMAGINA.md): keep this line when updating to a new Nextcloud release
+apply(from = "../imagina/flavor.gradle")

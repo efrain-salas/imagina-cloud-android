@@ -53,6 +53,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
 import com.nextcloud.android.common.ui.color.ColorUtil;
+import build.imagina.cloud.ImaginaSignIn;
 import com.nextcloud.android.common.ui.theme.utils.ColorRole;
 import com.nextcloud.client.account.User;
 import com.nextcloud.client.account.UserAccountManager;
@@ -322,7 +323,15 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity
         }
 
         /// load user interface
-        if (webViewLoginMethod) {
+        if (ImaginaSignIn.isEnabled(this)) {
+            // Imagina (IMAGINA.md): «Entrar con Imagina» instead of Nextcloud's login
+            accountSetupWebviewBinding = AccountSetupWebviewBinding.inflate(getLayoutInflater());
+            setContentView(accountSetupWebviewBinding.getRoot());
+            initLoginInfoView();
+            if (savedInstanceState == null) {
+                ImaginaSignIn.launch(this, authTabResultLauncher);
+            }
+        } else if (webViewLoginMethod) {
             accountSetupWebviewBinding = AccountSetupWebviewBinding.inflate(getLayoutInflater());
             setContentView(accountSetupWebviewBinding.getRoot());
             anonymouslyPostLoginRequest(webloginUrl);
@@ -1564,8 +1573,31 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity
 
     private final ActivityResultLauncher<Intent> authTabResultLauncher = AuthTabIntent.registerActivityResultLauncher(
         this,
-        result -> Log_OC.d(TAG, "Auth Tab result code: " + result.resultCode)
+        result -> {
+            Log_OC.d(TAG, "Auth Tab result code: " + result.resultCode);
+            if (ImaginaSignIn.isEnabled(this)) {
+                onImaginaSignInResult(result.resultCode, result.resultUri);
+            }
+        }
     );
+
+    // Imagina (IMAGINA.md): log in with the Nextcloud credentials Imagina gives this device
+    private void onImaginaSignInResult(int resultCode, Uri resultUri) {
+        singleThreadExecutor.execute(() -> {
+            ImaginaSignIn.Credentials credentials = ImaginaSignIn.complete(this, resultCode, resultUri);
+            runOnUiThread(() -> {
+                if (credentials == null) {
+                    DisplayUtils.showSnackMessage(this, R.string.imagina_sign_in_failed);
+                    ImaginaSignIn.launch(this, authTabResultLauncher);
+                    return;
+                }
+                mServerInfo.mBaseUrl = AuthenticatorUrlUtils.INSTANCE.normalizeUrlSuffix(credentials.getServer());
+                webViewUser = credentials.getUser();
+                webViewPassword = credentials.getAppPassword();
+                checkOcServer();
+            });
+        });
+    }
 
     private final ActivityResultLauncher<Intent> qrScanResultLauncher = registerForActivityResult(
         new ActivityResultContracts.StartActivityForResult(),

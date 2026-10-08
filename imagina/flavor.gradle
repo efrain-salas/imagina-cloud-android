@@ -1,0 +1,46 @@
+// Imagina Cloud: the "imagina" product flavor of the Nextcloud Android app (see IMAGINA.md).
+// Applied from the end of app/build.gradle.kts with a single line, so updating Nextcloud only
+// has to keep that line. Groovy on purpose: a script plugin in Groovy can configure the android
+// extension without the Android Gradle Plugin classes on its own classpath.
+
+def imaginaParams = new Properties()
+rootProject.file("imagina/imagina.properties").withInputStream { imaginaParams.load(it) }
+def localOverrides = rootProject.file("imagina/imagina.local.properties")
+if (localOverrides.exists()) {
+    localOverrides.withInputStream { imaginaParams.load(it) }
+}
+
+android {
+    // Needed for the resValue lines below (off by default since AGP 9); no effect on other flavors
+    buildFeatures {
+        resValues true
+    }
+
+    productFlavors {
+        imagina {
+            dimension "default"
+            applicationId imaginaParams.getProperty("IMAGINA_APPLICATION_ID")
+            versionNameSuffix imaginaParams.getProperty("IMAGINA_VERSION_NAME_SUFFIX", "")
+
+            // Values that change between environments; the rest of the branding is in
+            // app/src/imagina/res/values/setup.xml.
+            resValue "string", "webview_login_url", imaginaParams.getProperty("IMAGINA_CLOUD_URL") + "/index.php/login/v2"
+            resValue "string", "push_server_url", imaginaParams.getProperty("IMAGINA_PUSH_SERVER_URL", "")
+
+            // «Entrar con Imagina» (app/src/main/java/build/imagina/cloud/ImaginaSignIn.kt)
+            resValue "string", "imagina_auth_host", imaginaParams.getProperty("IMAGINA_AUTH_HOST", "")
+            resValue "string", "imagina_oauth_client_id", imaginaParams.getProperty("IMAGINA_OAUTH_CLIENT_ID", "")
+            // Prototype only, from imagina/imagina.local.properties (C0.11)
+            resValue "string", "imagina_test_nc_user", imaginaParams.getProperty("IMAGINA_TEST_NC_USER", "")
+            resValue "string", "imagina_test_nc_app_password", imaginaParams.getProperty("IMAGINA_TEST_NC_APP_PASSWORD", "")
+        }
+    }
+
+    sourceSets {
+        // Same variant classes as the F-Droid build (no Google services) until push lands (C11.5)
+        imagina {
+            java.srcDirs += "src/generic/java"
+            kotlin.srcDirs += "src/generic/java"
+        }
+    }
+}

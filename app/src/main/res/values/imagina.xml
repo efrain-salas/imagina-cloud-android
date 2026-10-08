@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Imagina Cloud hooks (IMAGINA.md). New file, so updates of Nextcloud never conflict with it.
+  Empty defaults keep Nextcloud's own behaviour; the "imagina" flavor fills them from
+  imagina/imagina.properties (imagina/flavor.gradle).
+-->
+<resources>
+    <!-- «Entrar con Imagina»: Imagina's identity server; empty, Nextcloud's login is used -->
+    <string name="imagina_auth_host" translatable="false"></string>
+    <string name="imagina_oauth_client_id" translatable="false"></string>
+    <!-- Prototype only (C0.11), until Imagina's devices API gives each device its credentials -->
+    <string name="imagina_test_nc_user" translatable="false"></string>
+    <string name="imagina_test_nc_app_password" translatable="false"></string>
+    <string name="imagina_sign_in_failed">Could not sign in with Imagina. Try again.</string>
+</resources>
