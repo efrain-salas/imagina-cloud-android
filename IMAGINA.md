@@ -92,6 +92,6 @@ Copia de `app/src/main/res/values*/strings.xml` los textos que dicen «Nextcloud
 ## Pendiente para la app de verdad
 
 - Credenciales desde la API de dispositivos de Imagina (C7.1) en lugar de las de prueba; sin pantalla de autorización de Imagina (C3.1).
-- Notificaciones (C11.5): código de variante de Google Play (`src/gplay/java`) con el proyecto de Firebase de Imagina y su servidor de notificaciones (`IMAGINA_PUSH_SERVER_URL`).
+- Notificaciones (C11.5): código de variante de Google Play (`src/gplay/java`) con el proyecto de Firebase de Imagina y su servidor de notificaciones (`IMAGINA_PUSH_SERVER_URL`). El proyecto de Firebase es `imagina-84bd9` y su `google-services.json` (app `build.imagina.cloud`) va en `app/src/imagina/`, fuera de git (como en Nextcloud: se descarga de la consola de Firebase, Configuración del proyecto → Tus apps); el plugin de Google Services se aplicará al sabor `imagina` al pasar a ese código.
 - Si la Auth Tab no está disponible, el navegador vuelve a la app por `<id>://oauth2redirect`: falta el `intent-filter` para ese caso.
 - Firma de publicación, ficha de Google Play y aviso de «no es la app oficial» en «Acerca de».
