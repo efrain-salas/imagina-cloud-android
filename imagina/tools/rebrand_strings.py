@@ -4,6 +4,9 @@
 (see IMAGINA.md, «Textos»). Run it again after updating Nextcloud. Only the capitalised word is replaced, so
 links such as nextcloud.com keep working. Multi-line strings and plurals are reported, not changed.
 
+The version shown in Settings › About also says that the app is a modified version of Nextcloud's and not the
+official one (Nextcloud's trademark guidelines), in the languages of Imagina and in English in the rest.
+
 Usage: rebrand_strings.py BRAND_NAME
 """
 import pathlib
@@ -17,12 +20,32 @@ flavor_res = root / 'app/src/imagina/res'
 single = re.compile(r'^\s*<string name="([^"]+)"([^>]*)>(.*)</string>\s*$')
 total = 0
 
+# Appended to the version in Settings › About; typographic apostrophes need no escaping in Android strings
+NOT_OFFICIAL = {
+    'en': ' · Modified version of the Nextcloud app, not the official app',
+    'es': ' · Versión modificada de la app de Nextcloud, no es la app oficial',
+    'de': ' · Veränderte Version der Nextcloud-App, nicht die offizielle App',
+    'fr': ' · Version modifiée de l’application Nextcloud, ce n’est pas l’application officielle',
+    'it': ' · Versione modificata dell’app di Nextcloud, non è l’app ufficiale',
+    'pt': ' · Versão modificada da app do Nextcloud, não é a app oficial',
+}
+VERSION_TEXTS = ('about_version', 'about_version_with_build')
+
+
+def notice_for(folder):
+    language = folder.removeprefix('values-').split('-')[0] if folder != 'values' else 'en'
+    return NOT_OFFICIAL.get(language, NOT_OFFICIAL['en'])
+
 for source in sorted(main_res.glob('values*/strings.xml')):
     overrides, skipped = [], []
     for line in source.read_text(encoding='utf-8').splitlines():
+        match = single.match(line)
+        if match and match.group(1) in VERSION_TEXTS:
+            name, attributes, text = match.groups()
+            overrides.append(f'    <string name="{name}"{attributes}>{text.replace("Nextcloud", brand)}{notice_for(source.parent.name)}</string>')
+            continue
         if 'Nextcloud' not in line:
             continue
-        match = single.match(line)
         if not match:
             skipped.append(line.strip()[:80])
             continue

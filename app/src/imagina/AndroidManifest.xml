@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Imagina Cloud (IMAGINA.md). Merged into Nextcloud's manifest for the "imagina" flavor only.
+-->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <application>
+        <!-- Notifications (C11.5) with the variant classes of Nextcloud's Google Play build (src/gplay/java),
+             as in its own manifest: Firebase only delivers messages, it collects nothing -->
+        <meta-data
+            android:name="firebase_analytics_collection_deactivated"
+            android:value="true" />
+        <meta-data
+            android:name="google_analytics_adid_collection_enabled"
+            android:value="false" />
+        <meta-data
+            android:name="google_analytics_ssaid_collection_enabled"
+            android:value="false" />
+
+        <service
+            android:name="com.owncloud.android.services.firebase.NCFirebaseMessagingService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+
+        <!-- «Entrar con Imagina» comes back through <id>://oauth2redirect when the browser has no Auth Tab
+             and opens a Custom Tab instead (ImaginaSignIn.isRedirect) -->
+        <activity android:name="com.owncloud.android.authentication.AuthenticatorActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="oauth2redirect"
+                    android:scheme="${applicationId}" />
+            </intent-filter>
+        </activity>
+    </application>
+</manifest>

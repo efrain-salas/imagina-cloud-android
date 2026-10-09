@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="imagina_sign_in">Se connecter avec Imagina</string>
+    <string name="imagina_sign_in_cancelled">Pour utiliser Imagina Cloud, connectez-vous avec votre numéro de mobile.</string>
+    <string name="imagina_sign_in_failed">La connexion avec Imagina a échoué. Réessayez.</string>
+    <string name="imagina_sign_in_leave">Quitter</string>
+</resources>

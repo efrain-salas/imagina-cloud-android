@@ -32,13 +32,13 @@ La APK queda en `app/build/outputs/apk/imagina/debug/`.
 | Clave | Para qué |
 | --- | --- |
 | `IMAGINA_APPLICATION_ID` | Id de la app (`build.imagina.cloud`). El OAuth vuelve a `<id>://oauth2redirect`. |
-| `IMAGINA_CLOUD_URL` | La nube a la que la app está fija (hoy la de pruebas, `https://cloud-test.imagina.build`). |
-| `IMAGINA_PUSH_SERVER_URL` | Servidor de notificaciones de Imagina (C7.10). Vacío: sin notificaciones todavía. |
+| `IMAGINA_CLOUD_URL` | La nube a la que la app está fija (`https://cloud.imagina.build`). Con «Entrar con Imagina» la dirección la da la API de dispositivos; esta solo se usa con el acceso de Nextcloud. |
+| `IMAGINA_PUSH_SERVER_URL` | Servidor de notificaciones de Imagina (C7.10, `https://auth.imagina.build/api/push`). Solo se usa si está el `google-services.json` de Imagina (ver «Notificaciones»). |
 | `IMAGINA_AUTH_HOST` | Servidor de identidad de Imagina. Vacío: la app usa el acceso de Nextcloud (Login Flow v2). |
 | `IMAGINA_OAUTH_CLIENT_ID` | Cliente OAuth público de la app en Imagina (`php artisan passport:client --public`). |
 | `IMAGINA_VERSION_NAME_SUFFIX` | Sufijo de versión (`35.0.1-imagina`). |
 
-`imagina/imagina.local.properties` (fuera de git) sobrescribe o añade claves en cada máquina. Hoy lleva el usuario y la contraseña de aplicación de Nextcloud de prueba (`IMAGINA_TEST_NC_USER`, `IMAGINA_TEST_NC_APP_PASSWORD`) que la app recibe hasta que exista la API de dispositivos de Imagina (C7.1).
+`imagina/imagina.local.properties` (fuera de git) sobrescribe o añade claves en cada máquina; no hace falta para compilar.
 
 La marca fija (nombre, identificadores únicos para convivir con la app oficial, colores, opciones) está en `app/src/imagina/res/values/setup.xml`, comentada.
 
@@ -47,20 +47,21 @@ La marca fija (nombre, identificadores únicos para convivir con la app oficial,
 | Fichero | Cambio | Motivo |
 | --- | --- | --- |
 | `app/build.gradle.kts` | Una línea al final: `apply(from = "../imagina/flavor.gradle")` | Cargar el sabor `imagina` sin tocar el resto de la compilación. |
-| `app/src/main/java/.../AuthenticatorActivity.java` | Dos enganches marcados «Imagina (IMAGINA.md)»: en `onCreate`, abrir «Entrar con Imagina» en lugar del acceso de Nextcloud; en `authTabResultLauncher`, recoger el resultado y entrar con las credenciales que da Imagina. Inactivos si `imagina_auth_host` está vacío. | El acceso de Nextcloud abre una pestaña que no vuelve sola a la app (Android 16 corta la red a la app en segundo plano y Nextcloud solo comprueba al volver), muestra sus propias páginas y pide autorizar dos veces. |
-| `.gitignore` | `imagina/imagina.local.properties` | Que las credenciales de prueba no entren en git. |
+| `app/src/main/java/.../AuthenticatorActivity.java` | Tres enganches marcados «Imagina (IMAGINA.md)»: en `onCreate`, abrir «Entrar con Imagina» en lugar del acceso de Nextcloud; en `authTabResultLauncher`, recoger el resultado y entrar con las credenciales que da Imagina; en `onNewIntent`, recoger la respuesta de Imagina cuando el navegador no tiene Auth Tab y abrió una Custom Tab. Inactivos si `imagina_auth_host` está vacío. Sirven también para volver a entrar cuando la contraseña de aplicación deja de valer (Nextcloud abre esta pantalla para actualizar la cuenta). | El acceso de Nextcloud abre una pestaña que no vuelve sola a la app (Android 16 corta la red a la app en segundo plano y Nextcloud solo comprueba al volver), muestra sus propias páginas y pide autorizar dos veces. |
+| `.gitignore` | `imagina/imagina.local.properties` y una excepción para `app/src/main/java/build/` | Que los valores locales no entren en git, y que sí entre el código de Imagina (paquete `build.imagina`), que la regla `build` de Nextcloud dejaría fuera. |
 
 ## Lo propio de Imagina
 
 | Dónde | Qué |
 | --- | --- |
-| `imagina/flavor.gradle` | El sabor `imagina`: id, sufijo de versión, valores por entorno (`resValue`) y el código de variante de la versión F-Droid (`src/generic/java`), sin servicios de Google hasta las notificaciones (C11.5). |
+| `imagina/flavor.gradle` | El sabor `imagina`: id, sufijo de versión, valores por entorno (`resValue`), el código de variante de la versión de Google Play de Nextcloud (`src/gplay/java`, notificaciones por Firebase) con sus dependencias, y los valores de Firebase leídos del `google-services.json` de Imagina. |
+| `app/src/imagina/AndroidManifest.xml` | Lo que el sabor añade al manifiesto: el servicio de Firebase y sus ajustes sin analítica (copiados del manifiesto de `gplay`) y la vuelta de «Entrar con Imagina» por `<id>://oauth2redirect` sin Auth Tab. |
 | `app/src/imagina/res/values/setup.xml` | Marca y opciones: nombre, identificadores, una sola cuenta y un solo servidor, sin introducción, sin calendario ni contactos, sin enlaces de Nextcloud, colores de Imagina. |
-| `app/src/main/java/build/imagina/cloud/ImaginaSignIn.kt` | «Entrar con Imagina»: OAuth con PKCE contra Imagina en una Auth Tab que vuelve por `<id>://oauth2redirect`, y las credenciales de Nextcloud del dispositivo. |
+| `app/src/main/java/build/imagina/cloud/ImaginaSignIn.kt` | «Entrar con Imagina»: OAuth con PKCE contra Imagina (alcance `cloud.devices`) en una Auth Tab que vuelve por `<id>://oauth2redirect`, y la API de dispositivos de Imagina (`POST /api/v1/cloud/devices`), que da la dirección de la nube y una contraseña de aplicación propia de este móvil con el nombre que la persona le puso. Si la persona cancela o Imagina rechaza el acceso (sin plaza en un Cloud, Cloud sin preparar…), un diálogo lo dice con el texto de Imagina y ofrece volver a intentarlo o salir. |
 | `app/src/main/res/values/imagina.xml` | Valores por defecto (vacíos) de los recursos que usa `ImaginaSignIn`, para que las demás versiones compilen igual. |
 | `app/src/imagina/res/drawable/`, `mipmap-anydpi/` | Imágenes de marca generadas (ver abajo). |
 | `app/src/imagina/res/values*/strings_rebrand.xml` | Textos con «Nextcloud» en todos los idiomas, generados (ver abajo). |
-| `app/src/imagina/res/values-es/strings_imagina.xml` | Textos propios en español. |
+| `app/src/main/res/values/imagina.xml`, `app/src/imagina/res/values-{es,de,fr,it,pt-rPT}/strings_imagina.xml` | Textos propios: en inglés por defecto y en los idiomas de Imagina. |
 
 ## Imágenes de marca
 
@@ -78,7 +79,7 @@ Genera el icono adaptativo (fondo, primer plano y capa monocroma), la pantalla d
 python3 -I imagina/tools/rebrand_strings.py "Imagina Cloud"
 ```
 
-Copia de `app/src/main/res/values*/strings.xml` los textos que dicen «Nextcloud» y los escribe con «Imagina Cloud» en `app/src/imagina/res/values*/strings_rebrand.xml`, en todos los idiomas. Solo cambia la palabra con mayúscula, así que los enlaces a nextcloud.com siguen igual. Avisa de los textos de varias líneas que no cambia (hoy, solo la descripción de la tienda en algunos idiomas, que la app no muestra). El nombre que se ve en el buscador («Buscar en …») viene del tema del servidor (`occ theming:config name`).
+Copia de `app/src/main/res/values*/strings.xml` los textos que dicen «Nextcloud» y los escribe con «Imagina Cloud» en `app/src/imagina/res/values*/strings_rebrand.xml`, en todos los idiomas. Además, la versión que se ve en Ajustes › Acerca de añade que es una versión modificada de la app de Nextcloud y no la oficial (en los idiomas de Imagina y en inglés en los demás). Solo cambia la palabra con mayúscula, así que los enlaces a nextcloud.com siguen igual. Avisa de los textos de varias líneas que no cambia (hoy, solo la descripción de la tienda en algunos idiomas, que la app no muestra). El nombre que se ve en el buscador («Buscar en …») viene del tema del servidor (`occ theming:config name`).
 
 ## Actualizar a una nueva versión de Nextcloud
 
@@ -86,12 +87,15 @@ Copia de `app/src/main/res/values*/strings.xml` los textos que dicen «Nextcloud
 2. Los conflictos solo pueden venir de los tres ficheros de la tabla. En `AuthenticatorActivity.java`, conservar los dos enganches marcados.
 3. Revisar las claves nuevas o renombradas de la marca: `git diff stable-<anterior> stable-<nueva> -- app/src/main/res/values/setup.xml` y llevar a `app/src/imagina/res/values/setup.xml` lo que haga falta (sobre todo identificadores y autoridades nuevos).
 4. Revisar imágenes de marca nuevas: `git diff --stat stable-<anterior> stable-<nueva> -- app/src/main/res/drawable app/src/main/res/mipmap-anydpi`; si aparece una con el logo de Nextcloud, añadirla a `imagina/generate-resources.sh`.
-5. Comprobar que `src/generic/java` sigue teniendo las clases de variante (`VariantComponentsModule`, `PushUtils`…).
+5. Comprobar que `src/gplay/java` sigue teniendo las clases de variante (`VariantComponentsModule`, `PushUtils`…) y llevar a `app/src/imagina/AndroidManifest.xml` lo que cambie en `app/src/gplay/AndroidManifest.xml` (servicio de Firebase, ajustes).
 6. Volver a generar los textos (`rebrand_strings.py`) y las imágenes, compilar y probar en el emulador: «Entrar con Imagina» (la pestaña se cierra sola), lista de ficheros, subir un fichero, y que no se vea «Nextcloud» en ninguna pantalla.
+
+## Notificaciones
+
+Las notificaciones llegan por Firebase Cloud Messaging a través del servidor de notificaciones de Imagina (C7.10), no del de Nextcloud. La app usa el código de la versión de Google Play de Nextcloud (`src/gplay/java`), que registra el móvil en ese servidor al entrar. El proyecto de Firebase es `imagina-84bd9` y su `google-services.json` (app `build.imagina.cloud`) va en `app/src/imagina/`, fuera de git: se descarga de la consola de Firebase (Configuración del proyecto › Tus apps). Como en Nextcloud, sus valores pasan a recursos sin el plugin de Google Services (`imagina/flavor.gradle`). Sin el fichero la app compila igual, sin notificaciones.
 
 ## Pendiente para la app de verdad
 
-- Credenciales desde la API de dispositivos de Imagina (C7.1) en lugar de las de prueba; sin pantalla de autorización de Imagina (C3.1).
-- Notificaciones (C11.5): código de variante de Google Play (`src/gplay/java`) con el proyecto de Firebase de Imagina y su servidor de notificaciones (`IMAGINA_PUSH_SERVER_URL`). El proyecto de Firebase es `imagina-84bd9` y su `google-services.json` (app `build.imagina.cloud`) va en `app/src/imagina/`, fuera de git (como en Nextcloud: se descarga de la consola de Firebase, Configuración del proyecto → Tus apps); el plugin de Google Services se aplicará al sabor `imagina` al pasar a ese código.
-- Si la Auth Tab no está disponible, el navegador vuelve a la app por `<id>://oauth2redirect`: falta el `intent-filter` para ese caso.
-- Firma de publicación, ficha de Google Play y aviso de «no es la app oficial» en «Acerca de».
+- Probar las notificaciones con un móvil real (un fichero compartido y una mención).
+- Al quitar la cuenta en la app, desconectar el dispositivo en Imagina (`DELETE /api/v1/cloud/devices/{id}`); hoy queda conectado en «Mi cuenta» hasta que se desconecta desde allí.
+- Firma de publicación y ficha de Google Play (con el aviso de que no es la app oficial).

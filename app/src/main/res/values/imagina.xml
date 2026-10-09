@@ -8,8 +8,8 @@
     <!-- «Entrar con Imagina»: Imagina's identity server; empty, Nextcloud's login is used -->
     <string name="imagina_auth_host" translatable="false"></string>
     <string name="imagina_oauth_client_id" translatable="false"></string>
-    <!-- Prototype only (C0.11), until Imagina's devices API gives each device its credentials -->
-    <string name="imagina_test_nc_user" translatable="false"></string>
-    <string name="imagina_test_nc_app_password" translatable="false"></string>
+    <string name="imagina_sign_in">Sign in with Imagina</string>
+    <string name="imagina_sign_in_cancelled">To use Imagina Cloud, sign in with your mobile number.</string>
     <string name="imagina_sign_in_failed">Could not sign in with Imagina. Try again.</string>
+    <string name="imagina_sign_in_leave">Leave</string>
 </resources>

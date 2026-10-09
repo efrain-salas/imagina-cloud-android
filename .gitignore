@@ -97,3 +97,5 @@ jacoco/
 
 # Imagina Cloud: local parameter overrides
 imagina/imagina.local.properties
+# Imagina Cloud: its code is in the package build.imagina, which the "build" rule above would leave out
+!app/src/main/java/build/

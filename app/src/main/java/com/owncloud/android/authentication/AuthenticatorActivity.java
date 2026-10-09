@@ -852,6 +852,12 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity
         super.onNewIntent(intent);
         Log_OC.d(TAG, "onNewIntent()");
 
+        // Imagina (IMAGINA.md): Imagina's answer when the browser opened a Custom Tab instead of an Auth Tab
+        if (ImaginaSignIn.isRedirect(this, intent.getData())) {
+            onImaginaSignInResult(AuthTabIntent.RESULT_OK, intent.getData());
+            return;
+        }
+
         if (intent.getBooleanExtra(FirstRunActivity.EXTRA_EXIT, false)) {
             super.finish();
         }
@@ -1583,19 +1589,11 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity
 
     // Imagina (IMAGINA.md): log in with the Nextcloud credentials Imagina gives this device
     private void onImaginaSignInResult(int resultCode, Uri resultUri) {
-        singleThreadExecutor.execute(() -> {
-            ImaginaSignIn.Credentials credentials = ImaginaSignIn.complete(this, resultCode, resultUri);
-            runOnUiThread(() -> {
-                if (credentials == null) {
-                    DisplayUtils.showSnackMessage(this, R.string.imagina_sign_in_failed);
-                    ImaginaSignIn.launch(this, authTabResultLauncher);
-                    return;
-                }
-                mServerInfo.mBaseUrl = AuthenticatorUrlUtils.INSTANCE.normalizeUrlSuffix(credentials.getServer());
-                webViewUser = credentials.getUser();
-                webViewPassword = credentials.getAppPassword();
-                checkOcServer();
-            });
+        ImaginaSignIn.handleResult(this, resultCode, resultUri, authTabResultLauncher, mAction == ACTION_CREATE, credentials -> {
+            mServerInfo.mBaseUrl = AuthenticatorUrlUtils.INSTANCE.normalizeUrlSuffix(credentials.getServer());
+            webViewUser = credentials.getUser();
+            webViewPassword = credentials.getAppPassword();
+            checkOcServer();
         });
     }
 

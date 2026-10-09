@@ -3,11 +3,32 @@
 // has to keep that line. Groovy on purpose: a script plugin in Groovy can configure the android
 // extension without the Android Gradle Plugin classes on its own classpath.
 
+import groovy.json.JsonSlurper
+
 def imaginaParams = new Properties()
 rootProject.file("imagina/imagina.properties").withInputStream { imaginaParams.load(it) }
 def localOverrides = rootProject.file("imagina/imagina.local.properties")
 if (localOverrides.exists()) {
     localOverrides.withInputStream { imaginaParams.load(it) }
+}
+
+// Imagina Cloud's Firebase project (imagina-84bd9), from the console's google-services.json, kept out
+// of git. Like Nextcloud's Google Play build, its values become resources instead of using the Google
+// Services plugin. Without the file the app builds the same, with no notifications.
+def firebase = [:]
+def googleServices = file("src/imagina/google-services.json")
+if (googleServices.exists()) {
+    def json = new JsonSlurper().parse(googleServices)
+    def client = json.client.find { it.client_info.android_client_info.package_name == imaginaParams.getProperty("IMAGINA_APPLICATION_ID") }
+    if (client != null) {
+        firebase = [
+            google_app_id       : client.client_info.mobilesdk_app_id,
+            google_api_key      : client.api_key[0].current_key,
+            gcm_defaultSenderId : json.project_info.project_number,
+            project_id          : json.project_info.project_id,
+            google_storage_bucket: json.project_info.storage_bucket ?: "",
+        ]
+    }
 }
 
 android {
@@ -25,22 +46,27 @@ android {
             // Values that change between environments; the rest of the branding is in
             // app/src/imagina/res/values/setup.xml.
             resValue "string", "webview_login_url", imaginaParams.getProperty("IMAGINA_CLOUD_URL") + "/index.php/login/v2"
-            resValue "string", "push_server_url", imaginaParams.getProperty("IMAGINA_PUSH_SERVER_URL", "")
+
+            // Notifications through Imagina's push server (C7.10), only with Imagina's Firebase project
+            resValue "string", "push_server_url", firebase.isEmpty() ? "" : imaginaParams.getProperty("IMAGINA_PUSH_SERVER_URL", "")
+            firebase.each { name, value -> resValue "string", name, value.toString() }
 
             // «Entrar con Imagina» (app/src/main/java/build/imagina/cloud/ImaginaSignIn.kt)
             resValue "string", "imagina_auth_host", imaginaParams.getProperty("IMAGINA_AUTH_HOST", "")
             resValue "string", "imagina_oauth_client_id", imaginaParams.getProperty("IMAGINA_OAUTH_CLIENT_ID", "")
-            // Prototype only, from imagina/imagina.local.properties (C0.11)
-            resValue "string", "imagina_test_nc_user", imaginaParams.getProperty("IMAGINA_TEST_NC_USER", "")
-            resValue "string", "imagina_test_nc_app_password", imaginaParams.getProperty("IMAGINA_TEST_NC_APP_PASSWORD", "")
         }
     }
 
     sourceSets {
-        // Same variant classes as the F-Droid build (no Google services) until push lands (C11.5)
+        // The variant classes of Nextcloud's Google Play build: notifications by Firebase Cloud Messaging.
+        // Its manifest entries are in app/src/imagina/AndroidManifest.xml.
         imagina {
-            java.srcDirs += "src/generic/java"
-            kotlin.srcDirs += "src/generic/java"
+            java.srcDirs += "src/gplay/java"
+            kotlin.srcDirs += "src/gplay/java"
         }
     }
+}
+
+dependencies {
+    imaginaImplementation project.extensions.getByType(VersionCatalogsExtension).named("libs").findBundle("gplay").get()
 }

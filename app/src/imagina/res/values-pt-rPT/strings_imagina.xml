@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="imagina_sign_in">Entrar com a Imagina</string>
+    <string name="imagina_sign_in_cancelled">Para usares o Imagina Cloud, entra com o teu telemóvel.</string>
+    <string name="imagina_sign_in_failed">Não foi possível entrar com a Imagina. Tenta outra vez.</string>
+    <string name="imagina_sign_in_leave">Sair</string>
+</resources>
