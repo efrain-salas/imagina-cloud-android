@@ -1,0 +1,73 @@
+# Imagina Cloud (IMAGINA.md): builds the app on every push to main, and every Monday opens an issue when
+# Nextcloud has published a release newer than the one this version starts from (NEXTCLOUD_ANDROID_TAG).
+
+name: "Imagina Cloud"
+
+on:
+    push:
+        branches: [ main ]
+    workflow_dispatch:
+    schedule:
+        -   cron: "0 6 * * 1"
+
+permissions:
+    contents: read
+
+concurrency:
+    group: imagina-${{ github.ref }}-${{ github.event_name }}
+    cancel-in-progress: true
+
+jobs:
+    build:
+        if: github.event_name != 'schedule'
+        runs-on: ubuntu-latest
+        env:
+            # Imagina Cloud's Firebase project (out of git); without it the app builds without notifications
+            GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
+        steps:
+            -   uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+            -   name: set up JDK 21
+                uses: actions/setup-java@dd06d9cba3e5552c54d9f8ea23572deb30010f7c # v6.0.0
+                with:
+                    distribution: "temurin"
+                    java-version: 21
+            -   uses: gradle/actions/wrapper-validation@9c971963bec38e04b3d30dcc455b5382be2fdbfb # v6.3.0
+            -   name: Imagina's Firebase project
+                if: env.GOOGLE_SERVICES_JSON != ''
+                run: printf '%s' "$GOOGLE_SERVICES_JSON" > app/src/imagina/google-services.json
+            -   name: Build
+                run: |
+                    echo "org.gradle.jvmargs=-Xmx6g -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8 -XX:+UseParallelGC -XX:MaxMetaspaceSize=1g" >> gradle.properties
+                    echo "org.gradle.caching=true" >> gradle.properties
+                    echo "org.gradle.parallel=true" >> gradle.properties
+                    ./gradlew :app:assembleImaginaDebug
+            -   uses: actions/upload-artifact@v4
+                with:
+                    name: imagina-cloud-debug
+                    path: app/build/outputs/apk/imagina/debug/*.apk
+                    retention-days: 14
+
+    upstream:
+        if: github.event_name != 'push'
+        runs-on: ubuntu-latest
+        permissions:
+            contents: read
+            issues: write
+        steps:
+            -   uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+            -   name: Warn of a new Nextcloud release
+                env:
+                    GH_TOKEN: ${{ github.token }}
+                run: |
+                    current=$(grep '^NEXTCLOUD_ANDROID_TAG=' imagina/imagina.properties | cut -d= -f2)
+                    latest=$(gh release view --repo nextcloud/android --json tagName -q .tagName)
+                    if [ "$latest" = "$current" ]; then
+                        echo "Up to date with $current"
+                        exit 0
+                    fi
+                    title="Nextcloud ${latest#stable-} is out"
+                    if gh issue list --state open --search "\"$title\" in:title" --json number -q '.[].number' | grep -q .; then
+                        echo "Already warned: $title"
+                        exit 0
+                    fi
+                    gh issue create --title "$title" --body "This version starts from \`$current\`. Nextcloud has published [\`$latest\`](https://github.com/nextcloud/android/releases/tag/$latest): follow «Actualizar a una nueva versión de Nextcloud» in IMAGINA.md."

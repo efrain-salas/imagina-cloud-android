@@ -31,6 +31,7 @@ La APK queda en `app/build/outputs/apk/imagina/debug/`.
 
 | Clave | Para qué |
 | --- | --- |
+| `NEXTCLOUD_ANDROID_TAG` | Versión de Nextcloud de la que parte (`stable-35.0.1`); la compilación automática avisa cuando hay una más nueva. |
 | `IMAGINA_APPLICATION_ID` | Id de la app (`build.imagina.cloud`). El OAuth vuelve a `<id>://oauth2redirect`. |
 | `IMAGINA_CLOUD_URL` | La nube a la que la app está fija (`https://cloud.imagina.build`). Con «Entrar con Imagina» la dirección la da la API de dispositivos; esta solo se usa con el acceso de Nextcloud. |
 | `IMAGINA_PUSH_SERVER_URL` | Servidor de notificaciones de Imagina (C7.10, `https://auth.imagina.build/api/push`). Solo se usa si está el `google-services.json` de Imagina (ver «Notificaciones»). |
@@ -84,11 +85,15 @@ Copia de `app/src/main/res/values*/strings.xml` los textos que dicen «Nextcloud
 ## Actualizar a una nueva versión de Nextcloud
 
 1. `git fetch upstream --tags` y `git merge stable-<nueva>` sobre `main`.
-2. Los conflictos solo pueden venir de los tres ficheros de la tabla. En `AuthenticatorActivity.java`, conservar los dos enganches marcados.
+2. Cambiar `NEXTCLOUD_ANDROID_TAG` en `imagina/imagina.properties`. Los conflictos solo pueden venir de los ficheros de la tabla. En `AuthenticatorActivity.java`, conservar los tres enganches marcados.
 3. Revisar las claves nuevas o renombradas de la marca: `git diff stable-<anterior> stable-<nueva> -- app/src/main/res/values/setup.xml` y llevar a `app/src/imagina/res/values/setup.xml` lo que haga falta (sobre todo identificadores y autoridades nuevos).
 4. Revisar imágenes de marca nuevas: `git diff --stat stable-<anterior> stable-<nueva> -- app/src/main/res/drawable app/src/main/res/mipmap-anydpi`; si aparece una con el logo de Nextcloud, añadirla a `imagina/generate-resources.sh`.
 5. Comprobar que `src/gplay/java` sigue teniendo las clases de variante (`VariantComponentsModule`, `PushUtils`…) y llevar a `app/src/imagina/AndroidManifest.xml` lo que cambie en `app/src/gplay/AndroidManifest.xml` (servicio de Firebase, ajustes).
 6. Volver a generar los textos (`rebrand_strings.py`) y las imágenes, compilar y probar en el emulador: «Entrar con Imagina» (la pestaña se cierra sola), lista de ficheros, subir un fichero, y que no se vea «Nextcloud» en ninguna pantalla.
+
+## Compilación automática
+
+`.github/workflows/imagina.yml` (GitHub Actions del repositorio público `efrain-salas/imagina-cloud-android`): compila la APK de depuración en cada subida a `main` (queda como artefacto 14 días) y cada lunes abre una incidencia si Nextcloud ha publicado una versión posterior a `NEXTCLOUD_ANDROID_TAG`. El `google-services.json` llega del secreto `GOOGLE_SERVICES_JSON` del repositorio. Los flujos de Nextcloud que trae el fork están desactivados en GitHub (`gh workflow disable`), porque son para su repositorio. La firma de publicación llegará con la cuenta de Google Play (C11.6).
 
 ## Notificaciones
 
