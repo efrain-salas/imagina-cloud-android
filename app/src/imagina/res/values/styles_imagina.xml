@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
   Styles of Nextcloud that paint teal (the primary colour) as a background or hard-code white text for it, and the
-  base themes that need the typeface. Nextcloud's styles cannot be edited from outside, so these are COPIES of the
+  base themes that need the typeface (and, in BaseTheme.ownCloud, the view inflater that makes the floating buttons accent). Nextcloud's styles cannot be edited from outside, so these are COPIES of the
   ones in res/values/styles.xml (stable-35.0.1) with Imagina's changes noted in a comment (and the typeface items
   marked «Imagina (IMAGINA.md)»); the flavor's resource of the same name wins. The base theme of the app
   (BaseTheme.ownCloud.Toolbar) is in themes_imagina.xml. When Nextcloud is updated, compare these with the new
@@ -9,7 +9,7 @@
 -->
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!-- Same as Nextcloud's, plus the typeface -->
+    <!-- Same as Nextcloud's, plus the typeface and the view inflater of the floating buttons -->
     <style name="BaseTheme.ownCloud" parent="Theme.Material3.DayNight">
         <item name="actionBarStyle">@style/Theme.ownCloud.Widget.ActionBar</item>
         <item name="android:actionBarStyle">@style/Theme.ownCloud.Widget.ActionBar</item>
@@ -33,6 +33,8 @@
         <!-- Imagina (IMAGINA.md): Instrument Sans -->
         <item name="android:fontFamily">@font/instrument_sans</item>
         <item name="fontFamily">@font/instrument_sans</item>
+        <!-- Imagina (IMAGINA.md): floating buttons in the accent (ImaginaFloatingButton.kt) -->
+        <item name="viewInflaterClass">build.imagina.cloud.ImaginaViewInflater</item>
     </style>
 
     <!-- Same as Nextcloud's, plus the typeface -->

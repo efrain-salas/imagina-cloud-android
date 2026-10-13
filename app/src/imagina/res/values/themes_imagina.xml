@@ -6,8 +6,10 @@
   theme. Nextcloud's themes cannot be extended from outside, so these are COPIES of the ones in Nextcloud's
   res/values/themes.xml (BaseTheme.ownCloud.Toolbar, light here and dark in values-night) and res/values/styles.xml
   (BaseTheme.ownCloud, FallbackThemingThemeBase) from stable-35.0.1, with two more items (android:fontFamily and
-  fontFamily). The flavor's resource of the same name wins. When Nextcloud is updated, compare them with the new
-  version's and bring the changes here (IMAGINA.md, «Actualizar a una nueva versión de Nextcloud»).
+  fontFamily), and a third in the two themes that styles the screens' views (viewInflaterClass: the floating buttons
+  in the accent, ImaginaFloatingButton.kt). The flavor's resource of the same name wins. When Nextcloud is updated,
+  compare them with the new version's and bring the changes here (IMAGINA.md, «Actualizar a una nueva versión de
+  Nextcloud»).
 
   Material's own text appearances (buttons, toolbar titles, dialogs, fields) get the font from
   m3_ref_typeface_* in typography_imagina.xml.
@@ -33,6 +35,8 @@
         <!-- Imagina (IMAGINA.md): Instrument Sans -->
         <item name="android:fontFamily">@font/instrument_sans</item>
         <item name="fontFamily">@font/instrument_sans</item>
+        <!-- Imagina (IMAGINA.md): floating buttons in the accent (ImaginaFloatingButton.kt) -->
+        <item name="viewInflaterClass">build.imagina.cloud.ImaginaViewInflater</item>
     </style>
 
 </resources>

@@ -3,6 +3,10 @@
   Imagina (IMAGINA.md): empty-state screen of the file list and other lists. Replaces Nextcloud's
   res/layout/empty_list.xml (stable-35.0.1); the only change is the headline in Fraunces (the design system's
   typeface for the title of an empty state). The views the app looks for keep their ids.
+
+  The font is set twice on purpose. With the base themes naming Instrument Sans (themes_imagina.xml), the headline
+  came out in it when only android:fontFamily was set (measured on the emulator); adding app:fontFamily, the one
+  AppCompat reads, makes it Fraunces.
 -->
 <androidx.core.widget.NestedScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
@@ -38,6 +42,7 @@
             android:layout_gravity="center_horizontal"
             android:ellipsize="end"
             android:fontFamily="@font/fraunces_semibold"
+            app:fontFamily="@font/fraunces_semibold"
             android:gravity="center"
             android:maxLines="2"
             android:paddingTop="@dimen/standard_padding"

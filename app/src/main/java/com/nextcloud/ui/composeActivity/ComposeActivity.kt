@@ -20,6 +20,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import build.imagina.cloud.ImaginaTypography
 import com.nextcloud.client.assistant.AssistantScreen
 import com.nextcloud.client.assistant.AssistantViewModel
 import com.nextcloud.client.assistant.chat.ChatViewModel
@@ -58,6 +59,7 @@ class ComposeActivity : DrawerActivity() {
         binding.composeView.setContent {
             MaterialTheme(
                 colorScheme = viewThemeUtils.getColorScheme(this),
+                typography = ImaginaTypography.typography(this), // Imagina (IMAGINA.md): Instrument Sans
                 content = {
                     Content(destination)
                 }

@@ -5,7 +5,9 @@
 links such as nextcloud.com keep working. Multi-line strings and plurals are reported, not changed.
 
 The version shown in Settings › About also says that the app is a modified version of Nextcloud's and not the
-official one (Nextcloud's trademark guidelines), in the languages of Imagina and in English in the rest.
+official one (Nextcloud's trademark guidelines), in the languages of Imagina and in English in the rest. The licence
+shown there gets a second line with the licence of the bundled typefaces (Instrument Sans and Fraunces, SIL Open Font
+License 1.1), in the same languages.
 
 Usage: rebrand_strings.py BRAND_NAME
 """
@@ -31,14 +33,41 @@ NOT_OFFICIAL = {
 }
 VERSION_TEXTS = ('about_version', 'about_version_with_build')
 
+# Second line of the licence in Settings › About (the text of prefs_gpl_v2): the typefaces' licence. The names of the
+# families and of the licence are not translated; \n is Android's escape for a line break, and the no-break space
+# keeps the version with the licence's name.
+TYPEFACES = {
+    'en': 'Instrument Sans and Fraunces — SIL Open Font License\u00a01.1',
+    'es': 'Instrument Sans y Fraunces — SIL Open Font License\u00a01.1',
+    'de': 'Instrument Sans und Fraunces — SIL Open Font License\u00a01.1',
+    'fr': 'Instrument Sans et Fraunces — SIL Open Font License\u00a01.1',
+    'it': 'Instrument Sans e Fraunces — SIL Open Font License\u00a01.1',
+    'pt': 'Instrument Sans e Fraunces — SIL Open Font License\u00a01.1',
+}
+LICENSE_TEXTS = ('prefs_gpl_v2',)
+
+
+def language_of(folder):
+    return folder.removeprefix('values-').split('-')[0] if folder != 'values' else 'en'
+
 
 def notice_for(folder):
-    language = folder.removeprefix('values-').split('-')[0] if folder != 'values' else 'en'
-    return NOT_OFFICIAL.get(language, NOT_OFFICIAL['en'])
+    return NOT_OFFICIAL.get(language_of(folder), NOT_OFFICIAL['en'])
+
+
+def typefaces_for(folder):
+    return TYPEFACES.get(language_of(folder), TYPEFACES['en'])
 
 for source in sorted(main_res.glob('values*/strings.xml')):
     overrides, skipped = [], []
-    for line in source.read_text(encoding='utf-8').splitlines():
+    content = source.read_text(encoding='utf-8')
+    # Not line by line: Nextcloud's Finnish text starts on the next line
+    for name in LICENSE_TEXTS:
+        licence = re.search(rf'<string name="{name}"([^>]*)>\s*(.*?)\s*</string>', content, re.S)
+        if licence:
+            attributes, text = licence.groups()
+            overrides.append(f'    <string name="{name}"{attributes}>{text}\\n{typefaces_for(source.parent.name)}</string>')
+    for line in content.splitlines():
         match = single.match(line)
         if match and match.group(1) in VERSION_TEXTS:
             name, attributes, text = match.groups()

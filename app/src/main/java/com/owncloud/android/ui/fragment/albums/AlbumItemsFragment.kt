@@ -37,6 +37,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.GridLayoutManager
+import build.imagina.cloud.ImaginaFloatingActionButton
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.nextcloud.client.account.User
@@ -265,7 +266,8 @@ class AlbumItemsFragment :
     }
 
     private fun createAddMediaButton() {
-        addMediaFab = FloatingActionButton(requireContext()).apply {
+        // Imagina (IMAGINA.md): a floating button in the accent, as the ones of the layouts
+        addMediaFab = ImaginaFloatingActionButton.create(requireContext()).apply {
             id = View.generateViewId()
             setImageResource(R.drawable.ic_plus)
             contentDescription = getString(R.string.add_media)

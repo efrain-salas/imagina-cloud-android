@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
   Dark counterpart of values/themes_imagina.xml: a copy of Nextcloud's values-night/themes.xml
-  (BaseTheme.ownCloud.Toolbar over Theme.Material3.Dark) with the font items. See that file.
+  (BaseTheme.ownCloud.Toolbar over Theme.Material3.Dark) with the font items and the view inflater. See that file.
 -->
 <resources>
 
@@ -24,6 +24,8 @@
         <!-- Imagina (IMAGINA.md): Instrument Sans -->
         <item name="android:fontFamily">@font/instrument_sans</item>
         <item name="fontFamily">@font/instrument_sans</item>
+        <!-- Imagina (IMAGINA.md): floating buttons in the accent (ImaginaFloatingButton.kt) -->
+        <item name="viewInflaterClass">build.imagina.cloud.ImaginaViewInflater</item>
     </style>
 
 </resources>

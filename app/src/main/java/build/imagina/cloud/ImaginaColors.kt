@@ -12,12 +12,15 @@ import scheme.SchemeTonalSpot
 import java.util.Optional
 
 /**
- * The colour schemes Nextcloud paints its views with (`ViewThemeUtils`: the search bar, the bottom bar, the floating
- * button, sheets, the selected drawer item), with Imagina's neutrals. Nextcloud derives every tone of the scheme from
- * the accent (the server's colour, Imagina's teal), so its surfaces come out mint; here the accent keeps giving the
- * primary, secondary and tertiary tones, as in Nextcloud, but the surfaces, the text and the outlines take the hue and
- * chroma of Imagina's canvas and ink (`colors_imagina.xml`): an almost grey cream in the light theme and the cool dark
- * of Imagina's dark theme. Off unless the "imagina" flavor is on (`ImaginaSignIn.isEnabled`).
+ * The colour schemes Nextcloud paints its views with (`ViewThemeUtils`: the search bar, the bottom bar, sheets, the
+ * selected drawer item), with Imagina's neutrals. The floating button is not painted from them: it is accent
+ * ([ImaginaFloatingActionButton]).
+ *
+ * Nextcloud derives every tone of the scheme from the accent (the server's colour, Imagina's teal), so its surfaces
+ * come out mint; here the accent keeps giving the primary, secondary and tertiary tones, as in Nextcloud, but the
+ * surfaces, the text and the outlines take the hue and chroma of Imagina's canvas and ink (`colors_imagina.xml`): an
+ * almost grey cream in the light theme and the cool dark of Imagina's dark theme. Off unless the "imagina" flavor is
+ * on (`ImaginaSignIn.isEnabled`).
  */
 object ImaginaColors {
     /** canvas #F8F7F4: the light theme's surfaces. */
