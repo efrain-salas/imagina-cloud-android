@@ -38,10 +38,11 @@ La APK queda en `app/build/outputs/apk/imagina/debug/`.
 | `IMAGINA_AUTH_HOST` | Servidor de identidad de Imagina. Vacío: la app usa el acceso de Nextcloud (Login Flow v2). |
 | `IMAGINA_OAUTH_CLIENT_ID` | Cliente OAuth público de la app en Imagina (`php artisan passport:client --public`). |
 | `IMAGINA_VERSION_NAME_SUFFIX` | Sufijo de versión (`35.0.1-imagina`). |
+| `IMAGINA_VERSION_CODE_OFFSET` | Se suma al `versionCode` de Nextcloud (0 a 99; con `35.0.1`, 350000190 + el valor). Google Play no acepta dos veces el mismo `versionCode`: subirlo uno por cada compilación que se suba sobre la misma `NEXTCLOUD_ANDROID_TAG`, y volver a 0 al actualizar Nextcloud (cada versión de Nextcloud suma 100 o más, así que el siguiente `versionCode` de Nextcloud siempre es mayor que cualquiera de este rango). |
 
 `imagina/imagina.local.properties` (fuera de git) sobrescribe o añade claves en cada máquina; no hace falta para compilar.
 
-La marca fija (nombre, identificadores únicos para convivir con la app oficial, colores, opciones) está en `app/src/imagina/res/values/setup.xml`, comentada.
+La marca fija (nombre, identificadores únicos para convivir con la app oficial, esquema de los enlaces de acceso `imagina-cloud://` en lugar del `nc://` de Nextcloud, enlaces del botón «Informar» de la pantalla de fallo hacia el repositorio de Imagina en lugar del de Nextcloud, colores, opciones) está en `app/src/imagina/res/values/setup.xml`, comentada.
 
 ## Cambios en ficheros de Nextcloud
 
@@ -59,7 +60,7 @@ La marca fija (nombre, identificadores únicos para convivir con la app oficial,
 
 ### Recursos de Nextcloud que el sabor sustituye
 
-No se toca ningún fichero de Nextcloud, pero el sabor trae su propia **copia** de estos recursos: un recurso del sabor con el mismo nombre gana al de `main`. Por eso, al actualizar Nextcloud hay que compararlos con los de la versión nueva y llevar sus cambios (paso 7 de «Actualizar a una nueva versión de Nextcloud»). Cada fichero dice en un comentario de cuál es copia y qué cambia. Todos están en `app/src/imagina/res/`.
+No se toca ningún fichero de Nextcloud, pero el sabor trae su propia **copia** de estos recursos: un recurso del sabor con el mismo nombre gana al de `main`. Por eso, al actualizar Nextcloud hay que compararlos con los de la versión nueva y llevar sus cambios (paso 7 de «Actualizar a una nueva versión de Nextcloud»). Cada fichero dice en un comentario de cuál es copia y qué cambia. Todos están en `app/src/imagina/res/`, salvo `network_security_config.xml`, que está en `app/src/imaginaRelease/res/` (solo la versión de publicación).
 
 | Recurso | Qué cambia respecto al de Nextcloud |
 | --- | --- |
@@ -74,13 +75,15 @@ No se toca ningún fichero de Nextcloud, pero el sabor trae su propia **copia** 
 | `values/colors_imagina.xml`, `values-night/colors_imagina.xml` | No son copias: dan nuevo valor, por nombre, a los colores de Nextcloud (ver «Colores»). |
 | `values/colors_material.xml`, `values/typography_imagina.xml` | Dan nuevo valor a `m3_sys_color_*` y `m3_ref_typeface_*`, de la librería Material (ver «Colores» y «Tipografía»). |
 | `values/brand_images.xml` | `logo`, `nextcloud_splash_logo` y `nextcloud_logo` pasan a ser el logotipo de Imagina (ver «Imágenes de marca»). |
+| `xml/network_security_config.xml` (en `app/src/imaginaRelease/res/`) | Solo la versión de publicación: sin http y sin certificados instalados por la persona. El de Nextcloud permite las dos cosas (cada persona escribe su servidor, y los móviles gestionados traen certificados propios); Imagina Cloud solo habla con `cloud.imagina.build` y `auth.imagina.build`, con certificados públicos. La versión de depuración conserva el de Nextcloud, para probar contra un Nextcloud local. Una empresa que inspeccione el tráfico TLS con un certificado propio no podrá usar la app. |
+| `mipmap-{m,h,xh,xxh,xxxh}dpi/ic_launcher.xml` | El mismo icono adaptable de `mipmap-anydpi` bajo cada densidad, para que no viajen en la APK los PNG del icono de Nextcloud (con su logo, que está bajo su licencia de marca). Nunca se mostraban (con `minSdk` 28 gana el adaptable). Los copia `imagina/generate-resources.sh`. |
 
 ## Lo propio de Imagina
 
 | Dónde | Qué |
 | --- | --- |
 | `imagina/flavor.gradle` | El sabor `imagina`: id, sufijo de versión, valores por entorno (`resValue`), el código de variante de la versión de Google Play de Nextcloud (`src/gplay/java`, notificaciones por Firebase) con sus dependencias, y los valores de Firebase leídos del `google-services.json` de Imagina. |
-| `app/src/imagina/AndroidManifest.xml` | Lo que el sabor añade al manifiesto: el servicio de Firebase y sus ajustes sin analítica (copiados del manifiesto de `gplay`) y la vuelta de «Entrar con Imagina» por `<id>://oauth2redirect` sin Auth Tab. |
+| `app/src/imagina/AndroidManifest.xml` | Lo que el sabor añade o quita en el manifiesto: el servicio de Firebase y sus ajustes sin analítica (copiados del manifiesto de `gplay`), la vuelta de «Entrar con Imagina» por `<id>://oauth2redirect` sin Auth Tab, sin el permiso `REQUEST_INSTALL_PACKAGES` (que nada usa y Google Play restringe; el manifiesto de `gplay` de Nextcloud también lo quita) y `usesCleartextTraffic="false"`. |
 | `app/src/imagina/res/values/setup.xml` | Marca y opciones: nombre, identificadores, una sola cuenta y un solo servidor, sin introducción, sin calendario ni contactos, sin enlaces de Nextcloud, colores de Imagina. |
 | `app/src/main/java/build/imagina/cloud/ImaginaSignIn.kt` | «Entrar con Imagina»: OAuth con PKCE contra Imagina (alcance `cloud.devices`) en una Auth Tab que vuelve por `<id>://oauth2redirect`, y la API de dispositivos de Imagina (`POST /api/v1/cloud/devices`), que da la dirección de la nube y una contraseña de aplicación propia de este móvil con el nombre que la persona le puso. Guarda el dispositivo y los tokens con `ImaginaDevice` y desconecta antes el de un acceso anterior. Si la persona cancela o Imagina rechaza el acceso (sin plaza en un Cloud, Cloud sin preparar…), un diálogo lo dice con el texto de Imagina y ofrece volver a intentarlo o salir. `styleSystemBars` deja las barras del sistema del color de la pantalla (crema, o el fondo oscuro) con los iconos del contraste justo. |
 | `app/src/main/java/build/imagina/cloud/ImaginaDevice.kt` | El dispositivo en Imagina (ver «El dispositivo en Imagina»): guarda su id y los tokens OAuth, lo desconecta (`DELETE /api/v1/cloud/devices/{id}`) al quitar la cuenta o al volver a entrar, y `ImaginaDeviceWork`, el trabajo periódico que renueva los tokens y recoge los dispositivos de cuentas ya quitadas. |
@@ -175,6 +178,23 @@ Copia de `app/src/main/res/values*/strings.xml` los textos que dicen «Nextcloud
 
 `.github/workflows/imagina.yml` (GitHub Actions del repositorio público `efrain-salas/imagina-cloud-android`): compila la APK de depuración en cada subida a `main` (queda como artefacto 14 días) y cada lunes abre una incidencia si Nextcloud ha publicado una versión posterior a `NEXTCLOUD_ANDROID_TAG`. El `google-services.json` llega del secreto `GOOGLE_SERVICES_JSON` del repositorio. Los flujos de Nextcloud que trae el fork están desactivados en GitHub (`gh workflow disable`), porque son para su repositorio. La firma de publicación llegará con la cuenta de Google Play (C11.6).
 
+## Publicar en Google Play
+
+Auditoría previa a la primera subida (13 oct 2026). El paquete que pide Google Play se compila con:
+
+```sh
+./gradlew :app:bundleImaginaRelease    # app/build/outputs/bundle/imaginaRelease/app-imagina-release.aab
+```
+
+- **Firma**: el sabor no tiene `signingConfig`, así que el AAB (y la APK `assembleImaginaRelease`) salen **sin firmar**. Google Play pide un AAB firmado con la clave de subida de Imagina (Play firma luego con la suya). La clave y sus contraseñas van fuera de git (por ejemplo en `imagina/imagina.local.properties`, que ya está ignorado) y se firma el AAB con `jarsigner` o con un `signingConfig` que las lea de ahí.
+- **Versión**: `versionCode` = el de Nextcloud (`35.0.1` da 350000190) más `IMAGINA_VERSION_CODE_OFFSET`; `versionName` = `35.0.1-imagina`. Sube con cada versión de Nextcloud; para una segunda subida sobre la misma versión de Nextcloud, subir el parámetro.
+- **SDK**: `minSdk` 28, `targetSdk` 36 (Android 16, lo que Google Play pide a las apps nuevas desde el 31 de agosto de 2026), `compileSdk` 37. Solo `arm64-v8a` y `x86_64` (sin móviles de 32 bits).
+- **16 KB**: las siete bibliotecas nativas de cada ABI están alineadas a 16 KB (cabeceras `LOAD` de `0x4000`, `zipalign -P 16` correcto).
+- **R8**: la versión de publicación no minimiza ni ofusca (Nextcloud no lo activa), así que no hay fichero de mapeo y las clases que los temas nombran (`ImaginaViewInflater`) no necesitan regla. Con R8 haría falta una.
+- **Red**: la versión de publicación solo admite https y los certificados del sistema (ver «Recursos de Nextcloud que el sabor sustituye»).
+- **Permisos** que Google Play revisa y por qué los tiene la app (los de Nextcloud, salvo `REQUEST_INSTALL_PACKAGES`, que el sabor quita): `MANAGE_EXTERNAL_STORAGE` («acceso a todos los ficheros»: subida automática desde cualquier carpeta y sincronización de carpetas locales), `READ_MEDIA_IMAGES`, `READ_MEDIA_VIDEO` y `READ_MEDIA_VISUAL_USER_SELECTED` (subida automática de fotos y vídeos, galería), `FOREGROUND_SERVICE_DATA_SYNC` (subidas y descargas) y `FOREGROUND_SERVICE_MEDIA_PLAYBACK` (reproductor de audio y vídeo), `REQUEST_IGNORE_BATTERY_OPTIMIZATIONS` (aviso para que la subida automática no la corte el ahorro de batería), `READ_CONTACTS`/`WRITE_CONTACTS` (copia de contactos y elegir un correo al compartir) y `READ_CALENDAR`/`WRITE_CALENDAR` (búsqueda; la copia del calendario está oculta). No lleva `QUERY_ALL_PACKAGES`, ubicación, alarmas exactas ni intención de pantalla completa.
+- **Pendiente de Imagina** (la ficha y las declaraciones de Play Console, la política de privacidad y la cuenta de pruebas para los revisores, que no pueden recibir un SMS): ver la lista en el informe de esta auditoría y, cuando la web de Imagina tenga la política, poner en `app/src/imagina/res/values/setup.xml` `privacy_enabled` a `true` y `privacy_url` con su dirección (Google Play pide el enlace también dentro de la app).
+
 ## El dispositivo en Imagina
 
 «Entrar con Imagina» crea un dispositivo en Imagina («Mi cuenta», `POST /api/v1/cloud/devices`). Para poder desconectarlo después, `ImaginaDevice` guarda, por cada nombre de usuario de Nextcloud, el id del dispositivo y los tokens OAuth del acceso (el de acceso dura 15 minutos; el de renovación, 7 días y se cambia en cada renovación) en unas preferencias privadas de la app (`imagina_device`, sin cifrar: la app no usa `androidx.security` y no permite copias de seguridad, así que no salen del móvil; Nextcloud guarda igual la contraseña de aplicación en el `AccountManager`).
@@ -205,4 +225,8 @@ Las notificaciones llegan por Firebase Cloud Messaging a través del servidor de
 - Ver en el emulador lo que falta del aspecto nuevo, en claro y en oscuro: la primera pantalla, diálogos y hojas inferiores. Visto el 13 oct 2026: la pantalla de carga, la lista de ficheros y el menú, en crema (oscuro de Imagina en el tema oscuro), con el logotipo e Instrument Sans; y, en claro y en oscuro, el botón flotante en el acento, la hoja del «+» y la del menú de un fichero, la pantalla de compartir, Ajustes con la licencia de las fuentes, el titular de la lista vacía en Fraunces y el asistente en Instrument Sans.
 - Contraste en el tema oscuro: en las pantallas que se pueden ver con el servidor de la prueba (lista, menú, hojas, Ajustes, compartir, subidas, papelera, perfil, selección de ficheros) no hay texto blanco sobre el teal claro `#2DD4BF`: lo pintado con el acento usa su color encima (`#0B2B28`) y lo pintado con los esquemas de Material lleva su propio color de contraste. Queda un sitio dudoso en claro, no en oscuro: `ShareViewHolder.setUserImage` (el avatar sin nombre de una compartición) pone un filtro de color blanco que gana al tinte del esquema, y en claro queda un icono blanco sobre menta `#9DF2E7`; solo se alcanza con un nombre vacío y no se ha tocado (sería una línea, `avatar.clearColorFilter()`).
 - Los botones flotantes de Compose del asistente (traducir, nueva conversación) salen con el contenedor primario del esquema (menta con icono oscuro). Arreglarlos pide o tocar los tres sitios o dar a `ComposeActivity` un esquema con `primaryContainer` en el acento, lo que obliga a cambiar `SimpleAlertDialog` (su texto en `onPrimaryContainer` sobre superficie). El servidor de Imagina no ofrece el asistente, el compartir de Compose ni los álbumes, así que no se han podido ver; revisar cuando se activen.
-- Firma de publicación y ficha de Google Play (con el aviso de que no es la app oficial).
+- Firma de publicación y ficha de Google Play (con el aviso de que no es la app oficial): ver «Publicar en Google Play». Antes de la primera subida faltan decisiones de Imagina:
+  - la dirección de contacto que la app da a OpenStreetMap al buscar el lugar de una foto (`osm_geocoder_contact` en `setup.xml`, hoy `android@nextcloud.com`, la de Nextcloud) y si esa búsqueda y el mapa (que mandan las coordenadas de la foto a OpenStreetMap) se quedan;
+  - si la app sigue pidiendo contactos y calendario (la búsqueda los pide al abrirse con un servidor de Nextcloud 30 o posterior, y «Copia de contactos» sigue en Ajustes), o se quitan esos permisos con un enganche en `UnifiedSearchFragment` y ocultando la copia de contactos;
+  - la política de privacidad (enlace dentro de la app: `privacy_enabled` y `privacy_url`) y un canal de soporte público: las plantillas de incidencias de `.github/ISSUE_TEMPLATE` siguen siendo las de Nextcloud (a ellas lleva el botón «Informar» de la pantalla de fallo);
+  - los registros de cambios de `fastlane/metadata` son los de Nextcloud: no usarlos como «novedades» de la ficha.

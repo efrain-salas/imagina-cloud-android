@@ -4,6 +4,4 @@
     <string name="imagina_sign_in_cancelled">Para usar Imagina Cloud, entra con tu móvil.</string>
     <string name="imagina_sign_in_failed">No se ha podido entrar con Imagina. Vuelve a intentarlo.</string>
     <string name="imagina_sign_in_leave">Salir</string>
-    <!-- Untranslated in Nextcloud (translatable="false"); Imagina speaks Spanish -->
-    <string name="placeholder_search_in_nextcloud" translatable="false">Buscar en Imagina Cloud</string>
 </resources>

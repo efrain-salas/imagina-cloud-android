@@ -25,6 +25,14 @@ cat > "$OUT/ic_launcher_background.xml" <<'XML'
 </vector>
 XML
 
+# Nextcloud's own launcher icons are PNGs per density in app/src/main/res/mipmap-*dpi. Android 8 and later (minSdk is 28)
+# always picks the adaptive icon of mipmap-anydpi, but the PNGs would still ship in the APK: the same adaptive icon under
+# each density replaces them (a resource of the flavor with the same name and density wins, whatever its file type).
+for DENSITY in mdpi hdpi xhdpi xxhdpi xxxhdpi; do
+    mkdir -p "app/src/imagina/res/mipmap-$DENSITY"
+    cp app/src/imagina/res/mipmap-anydpi/ic_launcher.xml "app/src/imagina/res/mipmap-$DENSITY/ic_launcher.xml"
+done
+
 # Wordmark «imagina /cloud» (cream grounds) and its reverse for the dark theme (drawable-night): the logo of
 # the first screen, the splash and the drawer header. 618.5 x 98 in the SVG; 180 x 28.52 dp (never under 20 dp high).
 $TOOL $WORDMARK "$OUT/imagina_cloud_wordmark.xml" --width 180 --height 28.52

@@ -4,8 +4,8 @@
 package build.imagina.cloud
 
 import android.accounts.AccountManager
-import android.annotation.SuppressLint
 import android.content.Context
+import androidx.core.content.edit
 import androidx.work.Constraints
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.NetworkType
@@ -236,14 +236,13 @@ object ImaginaDevice {
         context.applicationContext.getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE)
 
     /** Written at once (not in the background): the tokens are what disconnects the device later. */
-    @SuppressLint("ApplySharedPref")
     private fun save(context: Context, record: Record) {
         val json = JSONObject()
             .put("deviceId", record.deviceId)
             .put("createdAt", record.createdAt)
             .put("tokens", record.tokens.toJson())
 
-        preferences(context).edit().putString(record.loginName, json.toString()).commit()
+        preferences(context).edit(commit = true) { putString(record.loginName, json.toString()) }
     }
 
     private fun read(context: Context, loginName: String): Record? =
@@ -261,11 +260,10 @@ object ImaginaDevice {
     }.getOrNull()
 
     /** Forgets the record, unless a newer sign-in already replaced it. */
-    @SuppressLint("ApplySharedPref")
     private fun forget(context: Context, record: Record) {
         synchronized(lock) {
             if (read(context, record.loginName)?.deviceId == record.deviceId) {
-                preferences(context).edit().remove(record.loginName).commit()
+                preferences(context).edit(commit = true) { remove(record.loginName) }
             }
         }
     }

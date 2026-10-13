@@ -14,7 +14,9 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.appcompat.app.AlertDialog
 import androidx.browser.auth.AuthTabIntent
 import androidx.core.content.ContextCompat
+import androidx.core.content.edit
 import androidx.core.graphics.ColorUtils
+import androidx.core.net.toUri
 import androidx.core.view.WindowInsetsControllerCompat
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.owncloud.android.R
@@ -79,10 +81,10 @@ object ImaginaSignIn {
     fun launch(context: Context, launcher: ActivityResultLauncher<Intent>) {
         val verifier = randomToken()
         val state = randomToken()
-        context.getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE).edit()
-            .putString("verifier", verifier)
-            .putString("state", state)
-            .apply()
+        context.getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE).edit {
+            putString("verifier", verifier)
+            putString("state", state)
+        }
 
         val uri = Uri.Builder()
             .scheme("https")
@@ -137,7 +139,7 @@ object ImaginaSignIn {
         problem?.get()?.dismiss()
         val code = resultUri.getQueryParameter("code")
         val verifier = preferences.getString("verifier", null)
-        preferences.edit().clear().apply()
+        preferences.edit { clear() }
         if (code == null || verifier == null || resultUri.getQueryParameter("state") != waiting) {
             showProblem(activity, null, cancelled = false, launcher, leaveApp)
             return
@@ -246,7 +248,7 @@ object ImaginaSignIn {
      * kept it, marked for deletion, and never got notifications again).
      */
     private fun forgetPushRegistration(context: Context, server: String, loginName: String) {
-        val accountName = AccountUtils.buildAccountName(Uri.parse(server), loginName)
+        val accountName = AccountUtils.buildAccountName(server.toUri(), loginName)
         ArbitraryDataProviderImpl(context).deleteKeyForAccount(accountName, PushUtils.KEY_PUSH)
     }
 

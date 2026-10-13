@@ -42,6 +42,14 @@ android {
             dimension "default"
             applicationId imaginaParams.getProperty("IMAGINA_APPLICATION_ID")
             versionNameSuffix imaginaParams.getProperty("IMAGINA_VERSION_NAME_SUFFIX", "")
+            // versionCode is Nextcloud's (app/build.gradle.kts), so it rises with every Nextcloud release. Google Play
+            // refuses an upload whose versionCode it already has, so a new Imagina build on the same Nextcloud version
+            // raises IMAGINA_VERSION_CODE_OFFSET (0 to 99: a Nextcloud patch release adds 100, so it stays below the next one).
+            def versionCodeOffset = imaginaParams.getProperty("IMAGINA_VERSION_CODE_OFFSET", "0").toInteger()
+            if (versionCodeOffset < 0 || versionCodeOffset > 99) {
+                throw new GradleException("IMAGINA_VERSION_CODE_OFFSET must be between 0 and 99, not ${versionCodeOffset}")
+            }
+            versionCode android.defaultConfig.versionCode + versionCodeOffset
 
             // Values that change between environments; the rest of the branding is in
             // app/src/imagina/res/values/setup.xml.

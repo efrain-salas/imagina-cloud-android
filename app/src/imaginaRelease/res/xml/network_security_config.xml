@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Imagina (IMAGINA.md): Replaces Nextcloud's res/xml/network_security_config.xml in the release build only. Nextcloud's
+  allows plain http (people can type any server) and certificates the person installed (managed devices, self-signed
+  servers); Imagina Cloud talks only to Imagina's own servers (cloud.imagina.build, auth.imagina.build), all of them
+  https with public certificates, so the release build accepts neither. The debug build keeps Nextcloud's, for a
+  local Nextcloud.
+-->
+<network-security-config>
+    <base-config cleartextTrafficPermitted="false">
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </base-config>
+</network-security-config>

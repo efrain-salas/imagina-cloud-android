@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Imagina (IMAGINA.md): Firebase reads project_id by name (FirebaseOptions.fromResource), so lint, which sees no
+  reference to the resource that imagina/flavor.gradle generates from google-services.json, must keep it.
+-->
+<resources xmlns:tools="http://schemas.android.com/tools"
+    tools:keep="@string/project_id" />

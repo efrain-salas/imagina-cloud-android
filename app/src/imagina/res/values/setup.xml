@@ -44,6 +44,13 @@
     <string name="url_app_download">"https://play.google.com/store/apps/details?id=build.imagina.cloud"</string>
     <!-- GPL: the source of this modified app must stay available -->
     <string name="sourcecode_url" translatable="false">https://github.com/efrain-salas/imagina-cloud-android</string>
+    <!-- The crash screen's «Report» button opens these (copying the error text first): Imagina Cloud's own tracker, not
+         Nextcloud's -->
+    <string name="report_issue_link" translatable="false">https://github.com/efrain-salas/imagina-cloud-android/issues/new?template=bug_report.yml</string>
+    <string name="report_issue_empty_link" translatable="false">https://github.com/efrain-salas/imagina-cloud-android/issues/new/choose</string>
+
+    <!-- Nextcloud's own scheme for login links (nc://login/...) would offer this app next to the official one -->
+    <string name="login_data_own_scheme" translatable="false">imagina-cloud</string>
 
     <!-- Imagina's colours (resources/ui/tokens.css): accent #0F766E, accent-hover #115E59 (dark theme: colors_imagina.xml
          in values-night). The screens are cream, not teal: the palette is in colors_imagina.xml. The sign-in screen is

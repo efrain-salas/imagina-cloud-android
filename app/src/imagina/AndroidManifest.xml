@@ -2,9 +2,20 @@
 <!--
   Imagina Cloud (IMAGINA.md). Merged into Nextcloud's manifest for the "imagina" flavor only.
 -->
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <application>
+    <!-- Imagina Cloud never installs packages (nothing in the app uses it), and Google Play restricts it; Nextcloud's own
+         Google Play manifest (app/src/gplay/AndroidManifest.xml) removes it too -->
+    <uses-permission
+        android:name="android.permission.REQUEST_INSTALL_PACKAGES"
+        tools:node="remove" />
+
+    <!-- Plain http is never needed: Imagina's servers are https. In the release build the network security config
+         (src/imaginaRelease/res/xml) says so too; this keeps the manifest from announcing the opposite -->
+    <application
+        android:usesCleartextTraffic="false"
+        tools:replace="android:usesCleartextTraffic">
         <!-- Notifications (C11.5) with the variant classes of Nextcloud's Google Play build (src/gplay/java),
              as in its own manifest: Firebase only delivers messages, it collects nothing -->
         <meta-data
@@ -27,7 +38,9 @@
 
         <!-- «Entrar con Imagina» comes back through <id>://oauth2redirect when the browser has no Auth Tab
              and opens a Custom Tab instead (ImaginaSignIn.isRedirect) -->
-        <activity android:name="com.owncloud.android.authentication.AuthenticatorActivity">
+        <activity
+            android:name="com.owncloud.android.authentication.AuthenticatorActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
