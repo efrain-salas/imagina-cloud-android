@@ -84,6 +84,11 @@ class AccountRemovalWork(
         val arbitraryDataProvider: ArbitraryDataProvider = ArbitraryDataProviderImpl(context)
         val user = optionalUser.get()
         backgroundJobManager.cancelPeriodicContactsBackup(user)
+        // Imagina (IMAGINA.md): push notifications are unregistered while the account still exists, since the
+        // unregistration only goes through the accounts the phone has; after removing it nothing was unregistered and
+        // the push state stayed, marked for deletion, so the same account signing in again never registered
+        unregisterPushNotifications(context, user, arbitraryDataProvider)
+        arbitraryDataProvider.deleteKeyForAccount(user.accountName, PushUtils.KEY_PUSH)
         val userRemoved = userAccountManager.removeUser(user)
         val storageManager = FileDataStorageManager(user, context.contentResolver)
 
@@ -93,8 +98,6 @@ class AccountRemovalWork(
             ContactsPreferenceActivity.PREFERENCE_CONTACTS_AUTOMATIC_BACKUP,
             "false"
         )
-        // unregister push notifications
-        unregisterPushNotifications(context, user, arbitraryDataProvider)
 
         // remove pending account removal
         arbitraryDataProvider.deleteKeyForAccount(user.accountName, ManageAccountsActivity.PENDING_FOR_REMOVAL)

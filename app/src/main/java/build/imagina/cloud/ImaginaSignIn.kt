@@ -15,6 +15,9 @@ import androidx.appcompat.app.AlertDialog
 import androidx.browser.auth.AuthTabIntent
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.owncloud.android.R
+import com.owncloud.android.datamodel.ArbitraryDataProviderImpl
+import com.owncloud.android.lib.common.accounts.AccountUtils
+import com.owncloud.android.utils.PushUtils
 import org.json.JSONObject
 import java.lang.ref.WeakReference
 import java.net.HttpURLConnection
@@ -174,6 +177,9 @@ object ImaginaSignIn {
         if (deviceId != null && loginName != null) {
             ImaginaDevice.remember(context, loginName, deviceId, tokens)
         }
+        if (loginName != null) {
+            forgetPushRegistration(context, cloud.getString("url"), loginName)
+        }
 
         return Outcome.SignedIn(
             Credentials(
@@ -206,6 +212,16 @@ object ImaginaSignIn {
                 }
                 .show()
         )
+    }
+
+    /**
+     * The notifications of an earlier sign-in of the same account went with its app password: without forgetting their
+     * state the app would not register this one (a phone whose account was removed before Imagina fixed that removal
+     * kept it, marked for deletion, and never got notifications again).
+     */
+    private fun forgetPushRegistration(context: Context, server: String, loginName: String) {
+        val accountName = AccountUtils.buildAccountName(Uri.parse(server), loginName)
+        ArbitraryDataProviderImpl(context).deleteKeyForAccount(accountName, PushUtils.KEY_PUSH)
     }
 
     /** The name the person gave the phone, or its make and model: what «Mi cuenta» shows for this device. */
