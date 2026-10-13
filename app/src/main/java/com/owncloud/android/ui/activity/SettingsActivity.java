@@ -716,6 +716,11 @@ public class SettingsActivity extends PreferenceActivity
 
     private void setupBackupPreference() {
         Preference pContactsBackup = findPreference("backup");
+        // Imagina (IMAGINA.md): no backup of the phone's contacts or calendar
+        if (pContactsBackup != null && !getResources().getBoolean(R.bool.phone_contacts_calendar_enabled)) {
+            ((PreferenceCategory) findPreference("more")).removePreference(pContactsBackup);
+            return;
+        }
         if (pContactsBackup != null) {
             boolean showCalendarBackup = getResources().getBoolean(R.bool.show_calendar_backup);
             pContactsBackup.setTitle(showCalendarBackup

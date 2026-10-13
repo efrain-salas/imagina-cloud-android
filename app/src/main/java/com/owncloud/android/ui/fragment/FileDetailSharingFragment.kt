@@ -305,7 +305,10 @@ class FileDetailSharingFragment :
             searchView.inputType = InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS
             searchView.setQueryHint(null)
             searchView.setQuery("", false)
-            pickContactEmailBtn.setVisibility(View.VISIBLE)
+            // Imagina (IMAGINA.md): no picker of the phone's contacts (it asks for READ_CONTACTS)
+            pickContactEmailBtn.setVisibility(
+                if (resources.getBoolean(R.bool.phone_contacts_calendar_enabled)) View.VISIBLE else View.GONE
+            )
         }
     }
 

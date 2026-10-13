@@ -902,7 +902,8 @@ class FileDisplayActivity :
                 true
             }
 
-            MimeTypeUtil.isVCard(file.mimeType) -> {
+            // Imagina (IMAGINA.md): a .vcf is not offered as contacts to import into the phone
+            MimeTypeUtil.isVCard(file.mimeType) && resources.getBoolean(R.bool.phone_contacts_calendar_enabled) -> {
                 startContactListFragment(file)
                 true
             }
@@ -2089,7 +2090,8 @@ class FileDisplayActivity :
             return
         }
 
-        if (MimeTypeUtil.isVCard(file)) {
+        // Imagina (IMAGINA.md): a .vcf is not offered as contacts to import into the phone
+        if (MimeTypeUtil.isVCard(file) && resources.getBoolean(R.bool.phone_contacts_calendar_enabled)) {
             startContactListFragment(file)
         } else if (MimeTypeUtil.isPDF(file)) {
             startPdfPreview(file)

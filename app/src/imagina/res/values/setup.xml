@@ -30,16 +30,27 @@
     <bool name="is_branded_client">true</bool>
 
 
-    <!-- Imagina's Cloud has no calendar or contacts (docs/PLAN_CLOUD.md) -->
+    <!-- Imagina's Cloud has no calendar or contacts (docs/PLAN_CLOUD.md), and the app never reads the phone's: no
+         READ/WRITE_CONTACTS or READ/WRITE_CALENDAR in the manifest (AndroidManifest.xml of the flavor), the search is the
+         server's alone, and there is no contacts backup, no contacts import and no contact picker when sharing -->
     <bool name="show_calendar_backup">false</bool>
     <bool name="davdroid_integration_enabled">false</bool>
+    <bool name="phone_contacts_calendar_enabled">false</bool>
+
+    <!-- No map and no place name in a photo's details: they would send the photo's coordinates (and a contact email) to
+         OpenStreetMap, a third party the app does not otherwise talk to -->
+    <bool name="image_location_map_enabled">false</bool>
+    <string name="osm_geocoder_url" translatable="false"></string>
+    <string name="osm_geocoder_contact" translatable="false"></string>
 
     <!-- Nextcloud's own pages and programmes do not apply to Imagina Cloud -->
     <bool name="show_whats_new">false</bool>
     <bool name="recommend_enabled">false</bool>
     <bool name="participate_enabled">false</bool>
     <bool name="help_enabled">false</bool>
-    <bool name="privacy_enabled">false</bool>
+    <!-- Settings › About › Privacy opens Imagina's privacy policy (the link Google Play asks to find inside the app) -->
+    <bool name="privacy_enabled">true</bool>
+    <string name="privacy_url" translatable="false">https://imagina.build/privacy</string>
     <string name="url_server_install"></string>
     <string name="url_app_download">"https://play.google.com/store/apps/details?id=build.imagina.cloud"</string>
     <!-- GPL: the source of this modified app must stay available -->

@@ -11,6 +11,22 @@
         android:name="android.permission.REQUEST_INSTALL_PACKAGES"
         tools:node="remove" />
 
+    <!-- Imagina Cloud never reads or writes the phone's contacts or calendar (docs/PLAN_CLOUD.md): the search is the
+         server's alone and the contacts backup and import are hidden (phone_contacts_calendar_enabled in setup.xml).
+         Nextcloud's manifest declares the four, and Google Play would ask for a declaration of each -->
+    <uses-permission
+        android:name="android.permission.READ_CONTACTS"
+        tools:node="remove" />
+    <uses-permission
+        android:name="android.permission.WRITE_CONTACTS"
+        tools:node="remove" />
+    <uses-permission
+        android:name="android.permission.READ_CALENDAR"
+        tools:node="remove" />
+    <uses-permission
+        android:name="android.permission.WRITE_CALENDAR"
+        tools:node="remove" />
+
     <!-- Plain http is never needed: Imagina's servers are https. In the release build the network security config
          (src/imaginaRelease/res/xml) says so too; this keeps the manifest from announcing the opposite -->
     <application

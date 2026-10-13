@@ -1,28 +1,30 @@
-name: "🐛 Bug report: Nextcloud Android Client"
-description: "Submit a report and help us improve the Nextcloud Android Client"
-labels: ["bug", "0. Needs triage"]
+name: "Informar de un fallo"
+description: "Cuéntanos qué falla en Imagina Cloud para Android"
+labels: ["bug"]
 body:
-    -   type: checkboxes
-        id: before-posting
+    -   type: markdown
         attributes:
-            label: "⚠️ Before posting ⚠️"
-            description: All conditions are **required**. Your issue can be closed if these are checked incorrectly.
-            options:
-                -   label: This is a **bug**, not a question or an enhancement.
-                    required: true
-                -   label: I've [searched for similar issues](https://github.com/nextcloud/android/issues) and didn't find a duplicate.
-                    required: true
-                -   label: I've written a clear and descriptive title for this issue, not just "Bug" or "Crash".
-                    required: true
-                -   label: I agree to follow Nextcloud's [Code of Conduct](https://nextcloud.com/contribute/code-of-conduct/).
-                    required: true
+            value: |
+                Gracias por avisarnos. No escribas aquí contraseñas, códigos SMS ni datos personales, y revisa las capturas antes de subirlas.
+    -   type: input
+        id: app-version
+        attributes:
+            label: Versión de la app
+            description: En Ajustes, en el apartado «Acerca de».
+            placeholder: "35.0.1-imagina"
+        validations:
+            required: true
+    -   type: input
+        id: android-version
+        attributes:
+            label: Versión de Android y modelo del móvil
+            placeholder: "Android 15, Pixel 8"
+        validations:
+            required: true
     -   type: textarea
         id: repro-steps
         attributes:
-            label: Steps to reproduce
-            description: |
-                What are the steps to reproduce this issue? Please be as specific as possible.
-                If you can't reproduce it, please add an explanation.
+            label: Pasos para reproducirlo
             placeholder: |
                 1.
                 2.
@@ -30,103 +32,9 @@ body:
         validations:
             required: true
     -   type: textarea
-        id: expected-behaviour
+        id: what-happened
         attributes:
-            label: Expected behaviour
-            description: Tell us what should happen.
+            label: Qué pasó y qué esperabas que pasara
+            description: Si puedes, añade una captura de pantalla o el texto de la pantalla de fallo.
         validations:
             required: true
-    -   type: textarea
-        id: actual-behaviour
-        attributes:
-            label: Actual behaviour
-            description: Tell us what happens instead, as detailed as possible.
-        validations:
-            required: true
-# disabled because try.nextcloud.com is not working
-#    -   type: dropdown
-#        id: repro-on-try
-#        attributes:
-#            label: Can you reproduce this problem on try.nextcloud.com?
-#            description: |
-#                1. Create a demo account in [try.nextcloud.com](https://try.nextcloud.com). You'll be logged in automatically.
-#                2. Got to Settings -> Security and create a new app password
-#                3. Log in to this account with this app password by choosing "Alternative login with app token" during the login process.
-#            options:
-#                - "Yes"
-#                - "No"
-#                - Not applicable (explain in "additional information")
-#        validations:
-#            required: true
-    -   type: markdown
-        attributes:
-            value: "## Environment information"
-    -   type: input
-        id: android-version
-        attributes:
-            label: Android version
-        validations:
-            required: true
-    -   type: input
-        id: device-model
-        attributes:
-            label: Device brand and model
-        validations:
-            required: true
-    -   type: dropdown
-        id: stock-or-custom
-        attributes:
-            label: Stock or custom OS?
-            options:
-                - Stock
-                - Custom (explain in "additional information")
-        validations:
-            required: true
-    -   type: input
-        id: app-version
-        attributes:
-            label: Nextcloud android app version
-            description: Check the _About_ section in the Settings screen
-        validations:
-            required: true
-    -   type: input
-        id: server-version
-        attributes:
-            label: Nextcloud server version
-            description: Check _About_ in the top web menu (top right corner)
-        validations:
-            required: true
-    -   type: dropdown
-        id: reverse-proxy
-        attributes:
-            label: Using a reverse proxy?
-            options:
-                - "I don't know"
-                - "Yes"
-                - "No"
-        validations:
-            required: true
-    -   type: markdown
-        attributes:
-            value: "## Logs"
-    -   type: textarea
-        id: android-logs
-        attributes:
-            label: Android logs
-            description: |
-                Please **drop a log file** here.
-                Log file can be obtained:
-                    - At `storage/emulated/0/data/nextcloud.log` on beta or dev versions
-                    - By using [`logcat`](https://github.com/nextcloud/android#getting-debug-info-via-logcat-mag) otherwise
-                If you are unable to post logs, explain why in "Additional information"
-    -   type: textarea
-        id: server-logs
-        attributes:
-            label: Server error logs
-            description: Paste your server error logs here if available. Will be automatically formatted.
-            render: bash
-    -   type: textarea
-        id: additional-info
-        attributes:
-            label: Additional information
-            description: Enter any additional information here

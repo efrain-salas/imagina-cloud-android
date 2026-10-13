@@ -27,7 +27,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -52,6 +51,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import build.imagina.cloud.FloatingActionButton // Imagina (IMAGINA.md): the accent, not Material's mint
 import com.nextcloud.client.assistant.AssistantViewModel
 import com.nextcloud.client.assistant.model.AssistantScreenState
 import com.nextcloud.utils.extensions.getActivity

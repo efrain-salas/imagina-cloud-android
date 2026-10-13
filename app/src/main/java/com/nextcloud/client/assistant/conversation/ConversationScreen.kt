@@ -29,7 +29,6 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FabPosition
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -52,6 +51,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import build.imagina.cloud.FloatingActionButton // Imagina (IMAGINA.md): the accent, not Material's mint
 import com.nextcloud.client.assistant.conversation.model.ConversationScreenState
 import com.nextcloud.ui.composeComponents.bottomSheet.MoreActionsBottomSheet
 import com.owncloud.android.R

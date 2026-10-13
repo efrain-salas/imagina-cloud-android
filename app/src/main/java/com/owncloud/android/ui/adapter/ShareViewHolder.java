@@ -153,5 +153,7 @@ class ShareViewHolder extends RecyclerView.ViewHolder {
     private void setUserImage(ImageView avatar) {
         ImageViewExtensionsKt.makeRoundedWithIcon(avatar, context, R.drawable.ic_user_outline);
         viewThemeUtils.platform.colorImageViewBackgroundAndIcon(avatar);
+        // Imagina (IMAGINA.md): the white filter of makeRoundedWithIcon wins over the icon tint the line above sets
+        avatar.clearColorFilter();
     }
 }

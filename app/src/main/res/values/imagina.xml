@@ -12,4 +12,12 @@
     <string name="imagina_sign_in_cancelled">To use Imagina Cloud, sign in with your mobile number.</string>
     <string name="imagina_sign_in_failed">Could not sign in with Imagina. Try again.</string>
     <string name="imagina_sign_in_leave">Leave</string>
+
+    <!-- Switches the "imagina" flavor turns off (app/src/imagina/res/values/setup.xml); true is Nextcloud's behaviour -->
+    <!-- The phone's contacts and calendar: the search opens them (and asks to read them), "Back up contacts" in Settings,
+         opening a .vcf file as a list of contacts to import, and the contact picker when sharing by email -->
+    <bool name="phone_contacts_calendar_enabled">true</bool>
+    <!-- The map and the place name in a photo's details (tiles from tile.openstreetmap.org, place from
+         nominatim.openstreetmap.org) -->
+    <bool name="image_location_map_enabled">true</bool>
 </resources>

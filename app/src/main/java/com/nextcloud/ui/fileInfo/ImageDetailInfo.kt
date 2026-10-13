@@ -97,6 +97,9 @@ class ImageDetailInfo(private val fragment: FileInfoFragment, private val viewTh
         setImageTakenConditions(metadata, binding)
 
         metadata.location?.let { (lat, lon) ->
+            // Imagina (IMAGINA.md): no map and no place name, which would send the coordinates to OpenStreetMap
+            if (!fragment.resources.getBoolean(R.bool.image_location_map_enabled)) return@let
+
             initMap(binding, file, lat, lon)
             binding.imageLocation.visibility = View.VISIBLE
 

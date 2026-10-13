@@ -193,7 +193,9 @@ class UnifiedSearchFragment :
     private fun supportsOpeningCalendarContactsLocally(): Boolean = storageManager
         .getCapability(accountManager.user)
         .version
-        .isNewerOrEqual(NextcloudVersion.nextcloud_30)
+        .isNewerOrEqual(NextcloudVersion.nextcloud_30) &&
+        // Imagina (IMAGINA.md): the search never reads (or asks to read) the phone's contacts or calendar
+        resources.getBoolean(R.bool.phone_contacts_calendar_enabled)
 
     @Deprecated("Deprecated in Java")
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
