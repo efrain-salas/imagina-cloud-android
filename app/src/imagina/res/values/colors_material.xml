@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Imagina's tokens for Material 3's baseline colours. Nextcloud's themes inherit Theme.Material3.Light / .Dark, and
+  whatever the app does not colour itself (dialogs, menus, sheets, cards, fields, switches, chips…) takes these
+  m3_sys_color_* values, which are the library's purple baseline unless the app overrides them: an app resource
+  named like the library's wins over it. Literal hex on purpose (the light set is always the light tokens and the
+  dark set the dark ones, whatever the theme is). Lint is told to accept the override of the library's private resources
+  and to ignore that nothing in the app refers to them (the library does). See IMAGINA.md, «Colores».
+
+  Mapping: page and bars = canvas; dialogs, menus, sheets, cards = surface (white / #1A1B25); fields, tracks and
+  the like = surface-muted; selected = accent-soft with accent-soft-text; outlines = border-control; errors = danger.
+-->
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="PrivateResource,UnusedResources">
+    <!-- Light -->
+    <color name="m3_sys_color_light_primary">#0F766E</color>
+    <color name="m3_sys_color_light_on_primary">#FFFFFF</color>
+    <color name="m3_sys_color_light_primary_container">#CCFBF1</color>
+    <color name="m3_sys_color_light_on_primary_container">#134E4A</color>
+    <color name="m3_sys_color_light_inverse_primary">#2DD4BF</color>
+    <color name="m3_sys_color_light_secondary">#474B57</color>
+    <color name="m3_sys_color_light_on_secondary">#FFFFFF</color>
+    <color name="m3_sys_color_light_secondary_container">#CCFBF1</color>
+    <color name="m3_sys_color_light_on_secondary_container">#134E4A</color>
+    <color name="m3_sys_color_light_tertiary">#115E59</color>
+    <color name="m3_sys_color_light_on_tertiary">#FFFFFF</color>
+    <color name="m3_sys_color_light_tertiary_container">#F0FDFA</color>
+    <color name="m3_sys_color_light_on_tertiary_container">#134E4A</color>
+    <color name="m3_sys_color_light_error">#B42318</color>
+    <color name="m3_sys_color_light_on_error">#FFFFFF</color>
+    <color name="m3_sys_color_light_error_container">#FEF3F2</color>
+    <color name="m3_sys_color_light_on_error_container">#B42318</color>
+    <color name="m3_sys_color_light_background">#F8F7F4</color>
+    <color name="m3_sys_color_light_on_background">#1A1B25</color>
+    <color name="m3_sys_color_light_surface">#F8F7F4</color>
+    <color name="m3_sys_color_light_on_surface">#1A1B25</color>
+    <color name="m3_sys_color_light_surface_variant">#F1F0EC</color>
+    <color name="m3_sys_color_light_on_surface_variant">#474B57</color>
+    <color name="m3_sys_color_light_surface_dim">#E8E6E1</color>
+    <color name="m3_sys_color_light_surface_bright">#FFFFFF</color>
+    <color name="m3_sys_color_light_surface_container_lowest">#FFFFFF</color>
+    <color name="m3_sys_color_light_surface_container_low">#FFFFFF</color>
+    <color name="m3_sys_color_light_surface_container">#FFFFFF</color>
+    <color name="m3_sys_color_light_surface_container_high">#FFFFFF</color>
+    <color name="m3_sys_color_light_surface_container_highest">#F1F0EC</color>
+    <color name="m3_sys_color_light_outline">#8A8880</color>
+    <color name="m3_sys_color_light_outline_variant">#E8E6E1</color>
+    <color name="m3_sys_color_light_inverse_surface">#1A1B25</color>
+    <color name="m3_sys_color_light_inverse_on_surface">#F3F2EE</color>
+
+    <!-- Dark -->
+    <color name="m3_sys_color_dark_primary">#2DD4BF</color>
+    <color name="m3_sys_color_dark_on_primary">#0B2B28</color>
+    <color name="m3_sys_color_dark_primary_container">#123C38</color>
+    <color name="m3_sys_color_dark_on_primary_container">#99F6E4</color>
+    <color name="m3_sys_color_dark_inverse_primary">#0F766E</color>
+    <color name="m3_sys_color_dark_secondary">#C9CBD3</color>
+    <color name="m3_sys_color_dark_on_secondary">#1A1B25</color>
+    <color name="m3_sys_color_dark_secondary_container">#123C38</color>
+    <color name="m3_sys_color_dark_on_secondary_container">#99F6E4</color>
+    <color name="m3_sys_color_dark_tertiary">#5EEAD4</color>
+    <color name="m3_sys_color_dark_on_tertiary">#0B2B28</color>
+    <color name="m3_sys_color_dark_tertiary_container">#0F2A28</color>
+    <color name="m3_sys_color_dark_on_tertiary_container">#99F6E4</color>
+    <color name="m3_sys_color_dark_error">#F97066</color>
+    <color name="m3_sys_color_dark_on_error">#3A1A1A</color>
+    <color name="m3_sys_color_dark_error_container">#3A1A1A</color>
+    <color name="m3_sys_color_dark_on_error_container">#F97066</color>
+    <color name="m3_sys_color_dark_background">#111219</color>
+    <color name="m3_sys_color_dark_on_background">#F3F2EE</color>
+    <color name="m3_sys_color_dark_surface">#111219</color>
+    <color name="m3_sys_color_dark_on_surface">#F3F2EE</color>
+    <color name="m3_sys_color_dark_surface_variant">#22242F</color>
+    <color name="m3_sys_color_dark_on_surface_variant">#C9CBD3</color>
+    <color name="m3_sys_color_dark_surface_dim">#111219</color>
+    <color name="m3_sys_color_dark_surface_bright">#22242F</color>
+    <color name="m3_sys_color_dark_surface_container_lowest">#111219</color>
+    <color name="m3_sys_color_dark_surface_container_low">#1A1B25</color>
+    <color name="m3_sys_color_dark_surface_container">#1A1B25</color>
+    <color name="m3_sys_color_dark_surface_container_high">#1A1B25</color>
+    <color name="m3_sys_color_dark_surface_container_highest">#22242F</color>
+    <color name="m3_sys_color_dark_outline">#6E7284</color>
+    <color name="m3_sys_color_dark_outline_variant">#2A2C3A</color>
+    <color name="m3_sys_color_dark_inverse_surface">#F3F2EE</color>
+    <color name="m3_sys_color_dark_inverse_on_surface">#1A1B25</color>
+</resources>

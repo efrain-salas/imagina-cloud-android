@@ -45,10 +45,12 @@
     <!-- GPL: the source of this modified app must stay available -->
     <string name="sourcecode_url" translatable="false">https://github.com/efrain-salas/imagina-cloud-android</string>
 
-    <!-- Imagina's colours (resources/ui/tokens.css): accent #0F766E, accent-hover #115E59 -->
+    <!-- Imagina's colours (resources/ui/tokens.css): accent #0F766E, accent-hover #115E59 (dark theme: colors_imagina.xml
+         in values-night). The screens are cream, not teal: the palette is in colors_imagina.xml. The sign-in screen is
+         cream too, so its text is ink. -->
     <color name="primary">#0F766E</color>
     <color name="primary_dark">#115E59</color>
     <color name="color_accent">#0F766E</color>
-    <color name="login_text_color">#ffffff</color>
-    <color name="login_text_hint_color">#CCFBF1</color>
+    <color name="login_text_color">@color/imagina_ink</color>
+    <color name="login_text_hint_color">@color/imagina_ink_muted</color>
 </resources>

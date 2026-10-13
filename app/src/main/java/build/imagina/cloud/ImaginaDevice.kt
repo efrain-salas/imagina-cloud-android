@@ -170,9 +170,12 @@ object ImaginaDevice {
 
         when {
             status in 200..299 || status == HttpURLConnection.HTTP_GONE -> Deleted.GONE
+
             status == HttpURLConnection.HTTP_NOT_FOUND -> Deleted.MISSING
+
             status == HttpURLConnection.HTTP_UNAUTHORIZED ||
                 status == HttpURLConnection.HTTP_FORBIDDEN -> Deleted.REFUSED
+
             else -> Deleted.FAILED
         }
     } catch (exception: Exception) {
@@ -194,9 +197,9 @@ object ImaginaDevice {
                 body = ImaginaApi.form(
                     "grant_type" to "refresh_token",
                     "client_id" to context.getString(R.string.imagina_oauth_client_id),
-                    "refresh_token" to refreshToken,
+                    "refresh_token" to refreshToken
                 ),
-                contentType = "application/x-www-form-urlencoded",
+                contentType = "application/x-www-form-urlencoded"
             )
         } catch (exception: Exception) {
             return Access.Unreachable
@@ -208,7 +211,9 @@ object ImaginaDevice {
                 save(context, record.copy(tokens = renewed))
                 Access.Token(renewed.accessToken)
             }
+
             status == HttpURLConnection.HTTP_BAD_REQUEST || status == HttpURLConnection.HTTP_UNAUTHORIZED -> Access.Dead
+
             else -> Access.Unreachable
         }
     }

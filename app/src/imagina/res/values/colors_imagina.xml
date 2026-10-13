@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Imagina Cloud's palette, the «Light Craft» tokens of Imagina's design system (resources/ui/tokens.css in the
+  Imagina repository), light theme; values-night/colors_imagina.xml has the dark one. See IMAGINA.md, «Colores».
+
+  The screens are cream (canvas) and teal is only the highlight (accent): primary action, selection, current item,
+  links, switches. Nextcloud's colour names are pointed at the tokens here, so no Nextcloud file changes. Where
+  Nextcloud also defines a colour in values-night/colors.xml, the flavor has to define it in values-night too (a
+  qualified resource wins over an unqualified one), which values-night/colors_imagina.xml does.
+-->
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="UnusedResources">
+    <!-- Tokens -->
+    <color name="imagina_canvas">#F8F7F4</color>
+    <color name="imagina_surface">#FFFFFF</color>
+    <color name="imagina_surface_muted">#F1F0EC</color>
+    <color name="imagina_border">#E8E6E1</color>
+    <color name="imagina_border_control">#8A8880</color>
+    <color name="imagina_ink">#1A1B25</color>
+    <color name="imagina_ink_secondary">#474B57</color>
+    <color name="imagina_ink_muted">#5E6270</color>
+    <color name="imagina_accent">#0F766E</color>
+    <color name="imagina_accent_hover">#115E59</color>
+    <color name="imagina_on_accent">#FFFFFF</color>
+    <color name="imagina_accent_soft">#CCFBF1</color>
+    <color name="imagina_accent_soft_text">#134E4A</color>
+    <color name="imagina_accent_tint">#F0FDFA</color>
+
+    <!-- Screens and bars: cream, never teal -->
+    <color name="bg_default">@color/imagina_canvas</color>
+    <color name="appbar">@color/imagina_canvas</color>
+    <color name="fontAppbar">@color/imagina_ink_secondary</color>
+    <color name="foreground_highlight">@color/imagina_ink</color>
+
+    <!-- Text -->
+    <color name="text_color">@color/imagina_ink</color>
+    <color name="secondary_text_color">@color/imagina_ink_muted</color>
+    <color name="drawer_text_color">@color/imagina_ink_secondary</color>
+    <color name="drawer_menu_icon">@color/imagina_ink_secondary</color>
+
+    <!-- Separators, secondary zones (the expand arrows of the sheets were the divider colour: they need to be seen) -->
+    <color name="list_divider_background">@color/imagina_border</color>
+    <color name="list_expand_icon_color">@color/imagina_ink_muted</color>
+    <color name="nc_grey">@color/imagina_surface_muted</color>
+    <color name="task_container">@color/imagina_surface_muted</color>
+    <color name="bg_message_bubble">@color/imagina_surface_muted</color>
+    <color name="filelist_icon_background">@color/imagina_border</color>
+
+    <!-- Selection is the accent's soft tone; the contextual bar of a selection is the accent itself -->
+    <color name="selected_item_background">@color/imagina_accent_soft</color>
+    <color name="action_mode_background">@color/imagina_accent</color>
+
+    <!-- Buttons: one primary (the accent, from color_accent), the rest quiet -->
+    <color name="primary_button_text_color">@color/imagina_on_accent</color>
+    <color name="secondary_button_background_color">@color/imagina_border</color>
+    <color name="secondary_button_text_color">@color/imagina_ink</color>
+</resources>

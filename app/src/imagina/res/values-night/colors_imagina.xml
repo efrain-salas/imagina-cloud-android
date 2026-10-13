@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Imagina Cloud's palette, dark theme (see values/colors_imagina.xml). The accent is the lighter teal of the dark
+  theme and the text on it is dark. Nextcloud also defines these colours in its values-night/colors.xml, so the
+  flavor repeats them here: a qualified resource wins over an unqualified one.
+-->
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="UnusedResources">
+    <!-- Tokens -->
+    <color name="imagina_canvas">#111219</color>
+    <color name="imagina_surface">#1A1B25</color>
+    <color name="imagina_surface_muted">#22242F</color>
+    <color name="imagina_border">#2A2C3A</color>
+    <color name="imagina_border_control">#6E7284</color>
+    <color name="imagina_ink">#F3F2EE</color>
+    <color name="imagina_ink_secondary">#C9CBD3</color>
+    <color name="imagina_ink_muted">#A2A6B3</color>
+    <color name="imagina_accent">#2DD4BF</color>
+    <color name="imagina_accent_hover">#5EEAD4</color>
+    <color name="imagina_on_accent">#0B2B28</color>
+    <color name="imagina_accent_soft">#123C38</color>
+    <color name="imagina_accent_soft_text">#99F6E4</color>
+    <color name="imagina_accent_tint">#0F2A28</color>
+
+    <!-- Accent: the one colour that changes with the theme (colorPrimary of the app's themes) -->
+    <color name="primary">@color/imagina_accent</color>
+    <color name="primary_dark">@color/imagina_accent_hover</color>
+    <color name="color_accent">@color/imagina_accent</color>
+
+    <!-- Colours Nextcloud defines in values-night/colors.xml -->
+    <color name="bg_default">@color/imagina_canvas</color>
+    <color name="appbar">@color/imagina_canvas</color>
+    <color name="fontAppbar">@color/imagina_ink_secondary</color>
+    <color name="foreground_highlight">@color/imagina_ink</color>
+    <color name="text_color">@color/imagina_ink</color>
+    <color name="secondary_text_color">@color/imagina_ink_muted</color>
+    <color name="drawer_menu_icon">@color/imagina_ink_secondary</color>
+    <color name="list_divider_background">@color/imagina_border</color>
+    <color name="nc_grey">@color/imagina_surface_muted</color>
+    <color name="task_container">@color/imagina_surface_muted</color>
+    <color name="bg_message_bubble">@color/imagina_surface_muted</color>
+    <color name="filelist_icon_background">@color/imagina_border</color>
+    <color name="selected_item_background">@color/imagina_accent_soft</color>
+    <color name="action_mode_background">@color/imagina_accent_soft</color>
+    <color name="primary_button_text_color">@color/imagina_on_accent</color>
+</resources>

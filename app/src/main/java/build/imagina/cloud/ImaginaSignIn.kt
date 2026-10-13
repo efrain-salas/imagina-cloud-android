@@ -13,6 +13,9 @@ import android.util.Base64
 import androidx.activity.result.ActivityResultLauncher
 import androidx.appcompat.app.AlertDialog
 import androidx.browser.auth.AuthTabIntent
+import androidx.core.content.ContextCompat
+import androidx.core.graphics.ColorUtils
+import androidx.core.view.WindowInsetsControllerCompat
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.owncloud.android.R
 import com.owncloud.android.datamodel.ArbitraryDataProviderImpl
@@ -51,6 +54,25 @@ object ImaginaSignIn {
 
     @JvmStatic
     fun isEnabled(context: Context): Boolean = context.getString(R.string.imagina_auth_host).isNotBlank()
+
+    /**
+     * The sign-in screen is the page colour (cream, dark in the dark theme), not Nextcloud's teal. The activity colours
+     * its status bar with the primary colour when it starts, which turns the system bar icons white; this puts the
+     * page colour back and the icons dark on cream (light on the dark canvas).
+     */
+    @JvmStatic
+    @Suppress("DEPRECATION")
+    fun styleSystemBars(activity: Activity) {
+        val canvas = ContextCompat.getColor(activity, R.color.bg_default)
+        val onLight = ColorUtils.calculateLuminance(canvas) > 0.5
+        val window = activity.window
+        window.statusBarColor = canvas
+        window.navigationBarColor = canvas
+        WindowInsetsControllerCompat(window, window.decorView).apply {
+            isAppearanceLightStatusBars = onLight
+            isAppearanceLightNavigationBars = onLight
+        }
+    }
 
     /** Opens Imagina's sign-in in an Auth Tab. The verifier and state survive the activity being recreated. */
     @JvmStatic
@@ -151,9 +173,9 @@ object ImaginaSignIn {
                 "client_id" to context.getString(R.string.imagina_oauth_client_id),
                 "redirect_uri" to redirectUri(context),
                 "code" to code,
-                "code_verifier" to verifier,
+                "code_verifier" to verifier
             ),
-            contentType = "application/x-www-form-urlencoded",
+            contentType = "application/x-www-form-urlencoded"
         )
         val tokens = ImaginaTokens.parse(tokenAnswer)?.takeIf { tokenStatus == HttpURLConnection.HTTP_OK }
             ?: return Outcome.Refused(null)
@@ -165,7 +187,7 @@ object ImaginaSignIn {
             "https://$host/api/v1/cloud/devices",
             body = JSONObject().put("name", deviceName(context)).put("platform", "ANDROID").toString(),
             contentType = "application/json",
-            token = tokens.accessToken,
+            token = tokens.accessToken
         )
         val cloud = answer?.optJSONObject("cloud")
         if (status != HttpURLConnection.HTTP_CREATED || cloud == null) {
@@ -185,7 +207,7 @@ object ImaginaSignIn {
             Credentials(
                 server = cloud.getString("url"),
                 user = cloud.getString("loginName"),
-                appPassword = cloud.getString("appPassword"),
+                appPassword = cloud.getString("appPassword")
             )
         )
     }
@@ -200,7 +222,11 @@ object ImaginaSignIn {
         if (activity.isFinishing) return
         problem?.get()?.dismiss()
 
-        val text = message ?: activity.getString(if (cancelled) R.string.imagina_sign_in_cancelled else R.string.imagina_sign_in_failed)
+        val text =
+            message
+                ?: activity.getString(
+                    if (cancelled) R.string.imagina_sign_in_cancelled else R.string.imagina_sign_in_failed
+                )
         problem = WeakReference(
             MaterialAlertDialogBuilder(activity)
                 .setTitle(R.string.imagina_sign_in)

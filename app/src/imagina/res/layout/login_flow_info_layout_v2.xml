@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Imagina (IMAGINA.md): the text and the cancel button under the first screen while the sign-in is open in the
+  browser. Replaces Nextcloud's res/layout/login_flow_info_layout_v2.xml (stable-35.0.1), which hard-codes white
+  text and a white button for its teal screen: here ink text and a quiet outlined button on cream.
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/login_flow_info_v2"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="bottom"
+    android:gravity="center"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/standard_double_margin"
+        android:layout_marginBottom="@dimen/standard_double_margin"
+        android:gravity="center"
+        android:text="@string/authenticator_activity_please_complete_login_process"
+        android:textColor="@color/imagina_ink_secondary"
+        android:textSize="@dimen/splash_text_size" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/cancel_button"
+        style="@style/Widget.Material3.Button.OutlinedButton"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginBottom="@dimen/standard_double_margin"
+        android:gravity="center"
+        android:text="@string/authenticator_activity_cancel_login"
+        android:textColor="@color/imagina_ink"
+        app:cornerRadius="@dimen/button_corner_radius"
+        app:strokeColor="@color/imagina_border_control" />
+
+</LinearLayout>

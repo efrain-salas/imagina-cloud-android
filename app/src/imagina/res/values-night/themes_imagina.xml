@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Dark counterpart of values/themes_imagina.xml: a copy of Nextcloud's values-night/themes.xml
+  (BaseTheme.ownCloud.Toolbar over Theme.Material3.Dark) with the font items. See that file.
+-->
+<resources>
+
+    <style name="BaseTheme.ownCloud.Toolbar" parent="Theme.Material3.Dark">
+        <item name="alertDialogTheme">@style/ownCloud.AlertDialog</item>
+        <item name="android:alertDialogTheme">@style/Theme.ownCloud.Dialog</item>
+        <item name="android:colorBackground">@color/bg_default</item>
+        <item name="android:windowBackground">@color/bg_default</item>
+        <item name="colorAccent">@color/color_accent</item>
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorPrimaryDark">@color/primary</item>
+        <item name="searchViewStyle">@style/ownCloud.SearchView</item>
+        <item name="windowActionBar">false</item>
+        <item name="windowActionModeOverlay">true</item>
+        <item name="windowNoTitle">true</item>
+        <item name="textInputStyle">@style/Widget.App.TextInputLayout</item>
+        <item name="popupMenuStyle">@style/Nextcloud.Widget.PopupMenu</item>
+        <item name="bottomSheetDialogTheme">@style/ThemeOverlay.App.BottomSheetDialog</item>
+        <item name="actionModeStyle">@style/App.ActionMode</item>
+        <!-- Imagina (IMAGINA.md): Instrument Sans -->
+        <item name="android:fontFamily">@font/instrument_sans</item>
+        <item name="fontFamily">@font/instrument_sans</item>
+    </style>
+
+</resources>

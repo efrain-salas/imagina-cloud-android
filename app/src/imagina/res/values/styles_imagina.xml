@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Styles of Nextcloud that paint teal (the primary colour) as a background or hard-code white text for it, and the
+  base themes that need the typeface. Nextcloud's styles cannot be edited from outside, so these are COPIES of the
+  ones in res/values/styles.xml (stable-35.0.1) with Imagina's changes noted in a comment (and the typeface items
+  marked «Imagina (IMAGINA.md)»); the flavor's resource of the same name wins. The base theme of the app
+  (BaseTheme.ownCloud.Toolbar) is in themes_imagina.xml. When Nextcloud is updated, compare these with the new
+  version's (IMAGINA.md, «Actualizar a una nueva versión de Nextcloud»).
+-->
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Same as Nextcloud's, plus the typeface -->
+    <style name="BaseTheme.ownCloud" parent="Theme.Material3.DayNight">
+        <item name="actionBarStyle">@style/Theme.ownCloud.Widget.ActionBar</item>
+        <item name="android:actionBarStyle">@style/Theme.ownCloud.Widget.ActionBar</item>
+        <item name="actionBarPopupTheme">@style/ThemeOverlay.AppTheme.PopupMenu</item>
+        <item name="actionModeStyle">@style/App.ActionMode</item>
+        <item name="alertDialogTheme">@style/ownCloud.AlertDialog</item>
+        <item name="android:alertDialogTheme">@style/ownCloud.AlertDialog</item>
+        <item name="android:textColor">@color/text_color</item>
+        <item name="android:textColorHint">@color/secondary_text_color</item>
+        <item name="android:textColorSecondary">@color/secondary_text_color</item>
+        <item name="colorAccent">@color/color_accent</item>
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorPrimaryDark">@color/primary_dark</item>
+        <item name="colorSecondary">@color/secondary_text_color</item>
+        <item name="searchViewStyle">@style/ownCloud.SearchView</item>
+        <item name="android:actionModeBackground">@color/action_mode_background</item>
+        <item name="android:datePickerDialogTheme">@style/FallbackDatePickerDialogTheme</item>
+        <item name="android:navigationBarColor">@color/bg_default</item>
+        <item name="textInputStyle">@style/Widget.App.TextInputLayout</item>
+        <item name="dialogCornerRadius">@dimen/dialogBorderRadius</item>
+        <!-- Imagina (IMAGINA.md): Instrument Sans -->
+        <item name="android:fontFamily">@font/instrument_sans</item>
+        <item name="fontFamily">@font/instrument_sans</item>
+    </style>
+
+    <!-- Same as Nextcloud's, plus the typeface -->
+    <style name="FallbackThemingThemeBase" parent="Theme.Material3.DayNight">
+        <item name="actionModeBackground">@color/action_mode_background</item>
+        <item name="android:alertDialogTheme">@style/FallbackTheming.Dialog</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textColor">@color/text_color</item>
+        <item name="android:textColorSecondary">@color/secondary_text_color</item>
+        <item name="android:windowBackground">@color/bg_default</item>
+        <item name="colorSecondary">@color/secondary_text_color</item>
+        <item name="dialogTheme">@style/FallbackTheming.Dialog</item>
+        <item name="android:actionModeBackground">@color/action_mode_background</item>
+        <item name="android:datePickerDialogTheme">@style/FallbackDatePickerDialogTheme</item>
+        <item name="android:navigationBarColor">@color/bg_default</item>
+        <item name="textInputStyle">@style/Widget.App.TextInputLayout</item>
+        <item name="dialogCornerRadius">@dimen/dialogBorderRadius</item>
+        <!-- Imagina (IMAGINA.md): Instrument Sans -->
+        <item name="android:fontFamily">@font/instrument_sans</item>
+        <item name="fontFamily">@font/instrument_sans</item>
+    </style>
+
+    <!-- Window of the app while its first screen loads. Nextcloud paints it with the primary colour (teal);
+         Imagina's is the page colour (cream). No parent on purpose, as in Nextcloud: Theme.ownCloud is the implicit one. -->
+    <style name="Theme.ownCloud.Launcher">
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@color/bg_default</item>
+        <item name="android:windowBackground">@color/bg_default</item>
+        <item name="android:textColorHint">@color/secondary_text_color</item>
+    </style>
+
+    <!-- System splash screen (Android 12 and later; a compatibility screen before). Cream instead of teal, with
+         Nextcloud's transparent icon: the system only allows an icon here, and the wordmark is shown by the
+         launcher activity's own screen right after it (activity_splash.xml). -->
+    <style name="Theme.App.Starting" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/bg_default</item>
+        <item name="windowSplashScreenAnimatedIcon">@android:color/transparent</item>
+        <item name="postSplashScreenTheme">@style/Theme.ownCloud.Launcher</item>
+    </style>
+
+    <!-- Screens that were teal with white text (sign-in, deep link sign-in, first-run): cream with ink text. -->
+    <style name="Theme.ownCloud.noActionBar.LoginBase" parent="Theme.ownCloud.Toolbar">
+        <item name="android:windowBackground">@color/bg_default</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="colorControlNormal">@color/login_text_color</item>
+        <item name="colorControlActivated">@color/color_accent</item>
+        <item name="colorControlHighlight">@color/login_text_color</item>
+        <item name="colorAccent">@color/color_accent</item>
+        <item name="android:textColorHint">@color/login_text_hint_color</item>
+        <item name="android:navigationBarColor">@color/bg_default</item>
+    </style>
+
+    <style name="Theme.ownCloud.noActionBar.Login" parent="Theme.ownCloud.noActionBar.LoginBase">
+        <item name="android:windowLightNavigationBar">@bool/imagina_light_system_bars</item>
+    </style>
+
+    <!-- Action bar of the Theme.ownCloud family: page colour instead of teal -->
+    <style name="Theme.ownCloud.Widget.ActionBar" parent="@style/Theme.MaterialComponents.Light.DarkActionBar.Bridge">
+        <item name="android:background">@color/bg_default</item>
+        <item name="background">@color/bg_default</item>
+        <item name="android:textColor">@color/text_color</item>
+        <item name="android:shadowColor">@color/actionbar_shadow</item>
+        <item name="android:shadowRadius">1</item>
+        <item name="android:shadowDy">1</item>
+    </style>
+
+</resources>

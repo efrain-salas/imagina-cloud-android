@@ -8,6 +8,7 @@
 package com.owncloud.android.utils.theme
 
 import android.content.Context
+import build.imagina.cloud.ImaginaColors
 import androidx.core.content.ContextCompat
 import com.nextcloud.android.common.ui.theme.MaterialSchemes
 import com.nextcloud.client.account.AnonymousUser
@@ -41,7 +42,8 @@ internal class MaterialSchemesProviderImpl @Inject constructor(
 
     override fun getMaterialSchemesForCapability(capability: OCCapability): MaterialSchemes {
         val serverTheme = themeFactory.create(capability)
-        return MaterialSchemes.fromServerTheme(serverTheme)
+        // Imagina (IMAGINA.md): Imagina's neutrals (cream) instead of the accent's
+        return ImaginaColors.schemes(context, serverTheme.primaryColor) ?: MaterialSchemes.fromServerTheme(serverTheme)
     }
 
     override fun getMaterialSchemesForCurrentUser(): MaterialSchemes = when (val user = userAccountManager.user) {
@@ -55,7 +57,8 @@ internal class MaterialSchemesProviderImpl @Inject constructor(
 
     override fun getDefaultMaterialSchemes(): MaterialSchemes {
         val primaryColor = ContextCompat.getColor(context, R.color.primary)
-        return MaterialSchemes.fromColor(primaryColor)
+        // Imagina (IMAGINA.md): Imagina's neutrals (cream) instead of the accent's
+        return ImaginaColors.schemes(context, primaryColor) ?: MaterialSchemes.fromColor(primaryColor)
     }
 
     override fun getMaterialSchemesForPrimaryBackground(): MaterialSchemes {

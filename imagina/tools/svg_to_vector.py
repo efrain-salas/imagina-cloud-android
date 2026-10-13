@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""Converts Imagina's simple brand SVGs (path, circle, rect, <g transform="translate(...)">) into
-Android VectorDrawable XML, so brand images live as SVG sources in imagina/brand/ and the app
-resources are generated from them (see IMAGINA.md, «Imágenes de marca»).
+"""Converts Imagina's simple brand SVGs (path, circle, rect, <g transform="translate(...)">, and a translate on
+a shape itself as in the wordmarks) into Android VectorDrawable XML, so brand images live as SVG sources in
+imagina/brand/ and the app resources are generated from them (see IMAGINA.md, «Imágenes de marca»).
 
 Usage: svg_to_vector.py SOURCE.svg OUT.xml --width DP --height DP
          [--viewport W H] [--translate X Y] [--scale S] [--fill COLOR] [--drop-fill COLOR] [--skip-rect]
@@ -30,30 +30,34 @@ def rect_path(x, y, w, h, rx):
             f'V{y + rx:g}A{rx:g},{rx:g} 0 0,1 {x + rx:g},{y:g}Z')
 
 
+def translate_of(node):
+    """The (x, y) of a transform="translate(x y)" on the node, or (0, 0)."""
+    match = re.match(r'translate\(\s*([-\d.]+)[ ,]+([-\d.]+)\s*\)', node.get('transform', ''))
+    return (float(match.group(1)), float(match.group(2))) if match else (0.0, 0.0)
+
+
 def shapes(node, inherited_fill=None):
     """Yields (pathData, attributes, translate) for every drawable element."""
     fill = node.get('fill', inherited_fill)
     for child in node:
         tag = child.tag.replace(SVG, '')
         if tag == 'g':
-            tx = ty = 0.0
-            match = re.match(r'translate\(\s*([-\d.]+)[ ,]+([-\d.]+)\s*\)', child.get('transform', ''))
-            if match:
-                tx, ty = float(match.group(1)), float(match.group(2))
+            tx, ty = translate_of(child)
             for d, attrs, (gx, gy) in shapes(child, child.get('fill', fill)):
                 yield d, attrs, (gx + tx, gy + ty)
             continue
         attrs = {k: child.get(k) for k in ('fill', 'stroke', 'stroke-width', 'stroke-linecap', 'stroke-linejoin')}
         attrs['element'] = tag
         attrs['fill'] = attrs['fill'] or fill
+        own = translate_of(child)
         if tag == 'path':
-            yield child.get('d'), attrs, (0.0, 0.0)
+            yield child.get('d'), attrs, own
         elif tag == 'circle':
-            yield circle_path(float(child.get('cx')), float(child.get('cy')), float(child.get('r'))), attrs, (0.0, 0.0)
+            yield circle_path(float(child.get('cx')), float(child.get('cy')), float(child.get('r'))), attrs, own
         elif tag == 'rect':
             attrs['element'] = 'rect'
             yield rect_path(float(child.get('x', 0)), float(child.get('y', 0)), float(child.get('width')),
-                            float(child.get('height')), float(child.get('rx', 0))), attrs, (0.0, 0.0)
+                            float(child.get('height')), float(child.get('rx', 0))), attrs, own
 
 
 def main():

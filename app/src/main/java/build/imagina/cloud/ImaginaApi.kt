@@ -82,7 +82,7 @@ internal data class ImaginaTokens(val accessToken: String, val accessExpiresAt: 
             return ImaginaTokens(
                 accessToken = access,
                 accessExpiresAt = System.currentTimeMillis() + lifetime * 1000,
-                refreshToken = answer.stringOrNull("refresh_token") ?: previousRefreshToken,
+                refreshToken = answer.stringOrNull("refresh_token") ?: previousRefreshToken
             )
         }
 

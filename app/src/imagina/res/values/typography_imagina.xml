@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Instrument Sans in Material 3's text appearances (IMAGINA.md, «Tipografía»). Material 3 takes the typeface of its
+  text styles from these four strings (sans-serif / sans-serif-medium by default); an app string named like the
+  library's wins over it. "plain" is body, labels and buttons; "brand" is the large titles and headlines, which the
+  design system sets in Instrument Sans semibold (Fraunces is only for the empty-state headline). The other
+  text (every TextView that sets no font of its own) gets the family from the themes in themes_imagina.xml.
+
+  The strings hold a reference to a font, which aapt2 accepts and Android resolves (the text appearance gets the font
+  resource itself), but lint expects a string: hence the ignore on the file.
+-->
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="PrivateResource,ReferenceType,UnusedResources">
+    <string name="m3_ref_typeface_plain_regular" translatable="false">@font/instrument_sans_regular</string>
+    <string name="m3_ref_typeface_plain_medium" translatable="false">@font/instrument_sans_medium</string>
+    <string name="m3_ref_typeface_brand_regular" translatable="false">@font/instrument_sans_semibold</string>
+    <string name="m3_ref_typeface_brand_medium" translatable="false">@font/instrument_sans_semibold</string>
+</resources>

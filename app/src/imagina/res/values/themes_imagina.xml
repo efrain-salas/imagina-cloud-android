@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Imagina Cloud's typeface in the app's base themes (IMAGINA.md, «Tipografía»).
+
+  An item in a theme is read by every TextView that does not set its own font, so Instrument Sans needs to be in the
+  theme. Nextcloud's themes cannot be extended from outside, so these are COPIES of the ones in Nextcloud's
+  res/values/themes.xml (BaseTheme.ownCloud.Toolbar, light here and dark in values-night) and res/values/styles.xml
+  (BaseTheme.ownCloud, FallbackThemingThemeBase) from stable-35.0.1, with two more items (android:fontFamily and
+  fontFamily). The flavor's resource of the same name wins. When Nextcloud is updated, compare them with the new
+  version's and bring the changes here (IMAGINA.md, «Actualizar a una nueva versión de Nextcloud»).
+
+  Material's own text appearances (buttons, toolbar titles, dialogs, fields) get the font from
+  m3_ref_typeface_* in typography_imagina.xml.
+-->
+<resources>
+
+    <style name="BaseTheme.ownCloud.Toolbar" parent="Theme.Material3.Light">
+        <item name="alertDialogTheme">@style/ownCloud.AlertDialog</item>
+        <item name="android:alertDialogTheme">@style/Theme.ownCloud.Dialog</item>
+        <item name="android:colorBackground">@color/bg_default</item>
+        <item name="android:windowBackground">@color/bg_default</item>
+        <item name="colorAccent">@color/color_accent</item>
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorPrimaryDark">@color/primary</item>
+        <item name="searchViewStyle">@style/ownCloud.SearchView</item>
+        <item name="windowActionBar">false</item>
+        <item name="windowActionModeOverlay">true</item>
+        <item name="windowNoTitle">true</item>
+        <item name="textInputStyle">@style/Widget.App.TextInputLayout</item>
+        <item name="popupMenuStyle">@style/Nextcloud.Widget.PopupMenu</item>
+        <item name="bottomSheetDialogTheme">@style/ThemeOverlay.App.BottomSheetDialog</item>
+        <item name="actionModeStyle">@style/App.ActionMode</item>
+        <!-- Imagina (IMAGINA.md): Instrument Sans -->
+        <item name="android:fontFamily">@font/instrument_sans</item>
+        <item name="fontFamily">@font/instrument_sans</item>
+    </style>
+
+</resources>

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Imagina (IMAGINA.md): the launcher activity's own screen, right after the system splash. Replaces Nextcloud's
+  res/layout/activity_splash.xml (stable-35.0.1), which is teal with a square logo: here the page colour (cream) with
+  the wordmark «imagina /cloud» in the centre. The views LauncherActivity looks for keep their ids.
+-->
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg_default">
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/ivSplash"
+        android:layout_width="240dp"
+        android:layout_height="wrap_content"
+        android:adjustViewBounds="true"
+        android:contentDescription="@string/app_name"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/nextcloud_splash_logo" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/ivSplash">
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/splashScreenBold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/splashScreenBold"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/splash_text_size"
+            android:textStyle="bold" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/splashScreenNormal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/splashScreenNormal"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/splash_text_size" />
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

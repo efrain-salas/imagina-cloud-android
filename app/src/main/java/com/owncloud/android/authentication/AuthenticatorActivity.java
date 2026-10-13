@@ -325,6 +325,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity
         /// load user interface
         if (ImaginaSignIn.isEnabled(this)) {
             // Imagina (IMAGINA.md): «Entrar con Imagina» instead of Nextcloud's login
+            ImaginaSignIn.styleSystemBars(this);
             accountSetupWebviewBinding = AccountSetupWebviewBinding.inflate(getLayoutInflater());
             setContentView(accountSetupWebviewBinding.getRoot());
             initLoginInfoView();
