@@ -18,8 +18,6 @@ import com.owncloud.android.R
 import org.json.JSONObject
 import java.lang.ref.WeakReference
 import java.net.HttpURLConnection
-import java.net.URL
-import java.net.URLEncoder
 import java.security.MessageDigest
 import java.security.SecureRandom
 import java.util.Locale
@@ -36,7 +34,6 @@ import kotlin.concurrent.thread
  */
 object ImaginaSignIn {
     private const val PREFERENCES = "imagina_sign_in"
-    private const val TIMEOUT_MS = 20_000
     private const val DEVICE_NAME_MAX = 80
 
     data class Credentials(val server: String, val user: String, val appPassword: String)
@@ -136,12 +133,17 @@ object ImaginaSignIn {
         }
     }
 
-    /** Blocking: the token for the code, then this device's credentials from Imagina. */
+    /**
+     * Blocking: the token for the code, then this device's credentials from Imagina. The device Imagina creates is kept
+     * (with the tokens) by [ImaginaDevice], to disconnect it when the account is removed; the one of an earlier sign-in
+     * is disconnected first.
+     */
     private fun connect(context: Context, code: String, verifier: String): Outcome {
         val host = context.getString(R.string.imagina_auth_host)
-        val (tokenStatus, tokenAnswer) = request(
+        val (tokenStatus, tokenAnswer) = ImaginaApi.request(
+            "POST",
             "https://$host/oauth/token",
-            body = form(
+            body = ImaginaApi.form(
                 "grant_type" to "authorization_code",
                 "client_id" to context.getString(R.string.imagina_oauth_client_id),
                 "redirect_uri" to redirectUri(context),
@@ -150,18 +152,27 @@ object ImaginaSignIn {
             ),
             contentType = "application/x-www-form-urlencoded",
         )
-        val token = tokenAnswer?.optString("access_token")?.takeIf { tokenStatus == HttpURLConnection.HTTP_OK && it.isNotBlank() }
+        val tokens = ImaginaTokens.parse(tokenAnswer)?.takeIf { tokenStatus == HttpURLConnection.HTTP_OK }
             ?: return Outcome.Refused(null)
 
-        val (status, answer) = request(
+        ImaginaDevice.disconnectPrevious(context, tokens.accessToken)
+
+        val (status, answer) = ImaginaApi.request(
+            "POST",
             "https://$host/api/v1/cloud/devices",
             body = JSONObject().put("name", deviceName(context)).put("platform", "ANDROID").toString(),
             contentType = "application/json",
-            token = token,
+            token = tokens.accessToken,
         )
         val cloud = answer?.optJSONObject("cloud")
         if (status != HttpURLConnection.HTTP_CREATED || cloud == null) {
             return Outcome.Refused(answer?.optString("message")?.takeIf { it.isNotBlank() })
+        }
+
+        val deviceId = answer.optJSONObject("device")?.stringOrNull("id")
+        val loginName = cloud.stringOrNull("loginName")
+        if (deviceId != null && loginName != null) {
+            ImaginaDevice.remember(context, loginName, deviceId, tokens)
         }
 
         return Outcome.SignedIn(
@@ -207,33 +218,6 @@ object ImaginaSignIn {
         }
 
         return (given?.takeIf { it.isNotBlank() } ?: model).take(DEVICE_NAME_MAX)
-    }
-
-    private fun form(vararg fields: Pair<String, String>): String = fields.joinToString("&") { (key, value) ->
-        URLEncoder.encode(key, "UTF-8") + "=" + URLEncoder.encode(value, "UTF-8")
-    }
-
-    /** The status and JSON answer of a POST; the answer is null when it is not JSON. */
-    private fun request(url: String, body: String, contentType: String, token: String? = null): Pair<Int, JSONObject?> {
-        val connection = URL(url).openConnection() as HttpURLConnection
-        return try {
-            connection.connectTimeout = TIMEOUT_MS
-            connection.readTimeout = TIMEOUT_MS
-            connection.requestMethod = "POST"
-            connection.doOutput = true
-            connection.setRequestProperty("Content-Type", contentType)
-            connection.setRequestProperty("Accept", "application/json")
-            connection.setRequestProperty("Accept-Language", Locale.getDefault().toLanguageTag())
-            token?.let { connection.setRequestProperty("Authorization", "Bearer $it") }
-            connection.outputStream.use { it.write(body.toByteArray()) }
-
-            val status = connection.responseCode
-            val stream = if (status < HttpURLConnection.HTTP_BAD_REQUEST) connection.inputStream else connection.errorStream
-            val text = stream?.bufferedReader()?.use { it.readText() }.orEmpty()
-            status to runCatching { JSONObject(text) }.getOrNull()
-        } finally {
-            connection.disconnect()
-        }
     }
 
     private fun redirectUri(context: Context) = "${context.packageName}://oauth2redirect"

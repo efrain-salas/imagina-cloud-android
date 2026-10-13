@@ -25,6 +25,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.work.Worker
 import androidx.work.WorkerParameters
+import build.imagina.cloud.ImaginaAccount
 import com.google.gson.Gson
 import com.nextcloud.client.account.User
 import com.nextcloud.client.account.UserAccountManager
@@ -169,7 +170,8 @@ class NotificationWork constructor(
             .setSmallIcon(R.drawable.notification_icon)
             .setLargeIcon(BitmapFactory.decodeResource(context.resources, R.drawable.notification_icon))
             .setShowWhen(true)
-            .setSubText(user.accountName)
+            // Imagina (IMAGINA.md): the person's name instead of «user@host»
+            .setSubText(ImaginaAccount.label(user))
             .setContentTitle(notification.getSubject())
             .setContentText(notification.getMessage())
             .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
@@ -227,7 +229,8 @@ class NotificationWork constructor(
                 .setSmallIcon(R.drawable.notification_icon)
                 .setLargeIcon(BitmapFactory.decodeResource(context.resources, R.drawable.notification_icon))
                 .setShowWhen(true)
-                .setSubText(user.accountName)
+                // Imagina (IMAGINA.md): the person's name instead of «user@host»
+                .setSubText(ImaginaAccount.label(user))
                 .setContentTitle(context.getString(R.string.new_notification))
                 .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
                 .setAutoCancel(true)

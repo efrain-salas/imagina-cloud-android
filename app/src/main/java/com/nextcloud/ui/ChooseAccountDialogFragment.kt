@@ -19,6 +19,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.lifecycleScope
+import build.imagina.cloud.ImaginaAccount
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.nextcloud.client.account.User
 import com.nextcloud.client.account.UserAccountManager
@@ -104,7 +105,8 @@ class ChooseAccountDialogFragment :
             // Defining user texts, accounts, etc.
             binding.currentAccount.userName.text = user.toOwnCloudAccount().displayName
             binding.currentAccount.ticker.visibility = View.GONE
-            binding.currentAccount.account.text = user.accountName
+            // Imagina (IMAGINA.md): no «user@host» under the person's name
+            ImaginaAccount.setAccountLine(binding.currentAccount.account, user.accountName)
 
             // Defining user right indicator
             val icon = viewThemeUtils.platform.tintPrimaryDrawable(requireContext(), R.drawable.ic_check_circle)

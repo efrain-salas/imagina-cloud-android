@@ -24,6 +24,7 @@ import android.view.View;
 import android.webkit.URLUtil;
 import android.widget.ImageView;
 
+import build.imagina.cloud.ImaginaAccount;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.target.Target;
 import com.bumptech.glide.request.transition.Transition;
@@ -249,7 +250,8 @@ public class UserInfoActivity extends DrawerActivity implements Injectable {
 
 
     private void populateUserInfoUi(UserInfo userInfo) {
-        binding.userinfoUsername.setText(user.getAccountName());
+        // Imagina (IMAGINA.md): no «user@host» under the person's name
+        ImaginaAccount.setAccountLine(binding.userinfoUsername, user.getAccountName());
         binding.userinfoIcon.setTag(user.getAccountName());
         DisplayUtils.setAvatar(user,
                                this,

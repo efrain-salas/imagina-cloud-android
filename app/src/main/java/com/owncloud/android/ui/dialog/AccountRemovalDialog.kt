@@ -14,6 +14,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
+import build.imagina.cloud.ImaginaAccount
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.nextcloud.client.account.User
 import com.nextcloud.client.account.UserAccountManager
@@ -65,7 +66,8 @@ class AccountRemovalDialog :
         viewThemeUtils.platform.themeRadioButton(binding.radioRequestDeletion)
         alertDialog.themeButtons(viewThemeUtils)
         binding.userName.text = UserAccountManager.getDisplayName(user)
-        binding.account.text = user?.let { DisplayUtils.convertIdn(it.accountName, false) }
+        // Imagina (IMAGINA.md): no «user@host» under the person's name
+        ImaginaAccount.setAccountLine(binding.account, user?.let { DisplayUtils.convertIdn(it.accountName, false) })
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {

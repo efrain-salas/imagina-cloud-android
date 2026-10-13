@@ -21,6 +21,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import build.imagina.cloud.ImaginaAccount;
 import com.nextcloud.client.account.User;
 import com.nextcloud.client.account.UserAccountManager;
 import com.nextcloud.utils.mdm.MDMConfig;
@@ -245,7 +246,8 @@ public class UserListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
          * @param user the account
          */
         private void setUser(User user) {
-            binding.account.setText(DisplayUtils.convertIdn(user.getAccountName(), false));
+            // Imagina (IMAGINA.md): no «user@host» under the person's name
+            ImaginaAccount.setAccountLine(binding.account, DisplayUtils.convertIdn(user.getAccountName(), false));
             binding.account.setTag(user.getAccountName());
         }
 

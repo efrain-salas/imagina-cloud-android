@@ -11,7 +11,7 @@ Versión de la [app de Nextcloud para Android](https://github.com/nextcloud/andr
 La app de Nextcloud ya está pensada para versiones con otra marca: cada versión es un «sabor» (`productFlavor`) y casi toda la marca sale de recursos (`setup.xml`). Imagina Cloud es el sabor `imagina`:
 
 - Lo de Imagina vive en ficheros que Nextcloud no tiene (`imagina/`, `app/src/imagina/`, `app/src/main/java/build/imagina/`, `app/src/main/res/values/imagina.xml`), así que actualizar Nextcloud no choca con ellos.
-- Los ficheros de Nextcloud tocados son tres, con pocas líneas, en la tabla de abajo.
+- Los ficheros de Nextcloud tocados son pocos, con una o dos líneas marcadas «Imagina (IMAGINA.md)» cada uno, en la tabla de abajo (`grep -rn "Imagina (IMAGINA.md)" app/src` los lista).
 - Lo que cambia entre entornos va en `imagina/imagina.properties`; las imágenes y los textos con «Nextcloud» se generan con scripts, no se editan a mano.
 
 ## Compilar
@@ -49,6 +49,9 @@ La marca fija (nombre, identificadores únicos para convivir con la app oficial,
 | --- | --- | --- |
 | `app/build.gradle.kts` | Una línea al final: `apply(from = "../imagina/flavor.gradle")` | Cargar el sabor `imagina` sin tocar el resto de la compilación. |
 | `app/src/main/java/.../AuthenticatorActivity.java` | Tres enganches marcados «Imagina (IMAGINA.md)»: en `onCreate`, abrir «Entrar con Imagina» en lugar del acceso de Nextcloud; en `authTabResultLauncher`, recoger el resultado y entrar con las credenciales que da Imagina; en `onNewIntent`, recoger la respuesta de Imagina cuando el navegador no tiene Auth Tab y abrió una Custom Tab. Inactivos si `imagina_auth_host` está vacío. Sirven también para volver a entrar cuando la contraseña de aplicación deja de valer (Nextcloud abre esta pantalla para actualizar la cuenta). | El acceso de Nextcloud abre una pestaña que no vuelve sola a la app (Android 16 corta la red a la app en segundo plano y Nextcloud solo comprueba al volver), muestra sus propias páginas y pide autorizar dos veces. |
+| `app/src/main/java/.../jobs/AccountRemovalWork.kt` | Un enganche marcado (y su `import`) al final de `doWork`: `ImaginaDevice.accountRemoved(context, user.accountName)`. | Al quitar la cuenta en la app (también el borrado remoto), desconectar el dispositivo en Imagina; antes quedaba conectado en «Mi cuenta». |
+| `app/src/main/java/.../jobs/NotificationWork.kt` (2 sitios), `jobs/MediaFoldersDetectionWork.kt`, `org/nextcloud/providers/cursors/RootCursor.java` | `setSubText(user.accountName)` y `COLUMN_SUMMARY` pasan a `ImaginaAccount.label(user)`. | Las notificaciones y la raíz de la app de Ficheros de Android decían «1@cloud.imagina.build»; ahora, el nombre de la persona o nada. |
+| `app/src/main/java/.../ui/ChooseAccountDialogFragment.kt`, `ui/adapter/UserListAdapter.java`, `ui/dialog/AccountRemovalDialog.kt`, `ui/activity/UserInfoActivity.java` | La línea «usuario@servidor» bajo el nombre pasa por `ImaginaAccount.setAccountLine(vista, texto)`, que en Imagina la oculta. | Esas pantallas ya muestran el nombre de la persona encima; repetirlo o enseñar «1@cloud.imagina.build» no ayuda. |
 | `.gitignore` | `imagina/imagina.local.properties` y una excepción para `app/src/main/java/build/` | Que los valores locales no entren en git, y que sí entre el código de Imagina (paquete `build.imagina`), que la regla `build` de Nextcloud dejaría fuera. |
 
 ## Lo propio de Imagina
@@ -58,7 +61,10 @@ La marca fija (nombre, identificadores únicos para convivir con la app oficial,
 | `imagina/flavor.gradle` | El sabor `imagina`: id, sufijo de versión, valores por entorno (`resValue`), el código de variante de la versión de Google Play de Nextcloud (`src/gplay/java`, notificaciones por Firebase) con sus dependencias, y los valores de Firebase leídos del `google-services.json` de Imagina. |
 | `app/src/imagina/AndroidManifest.xml` | Lo que el sabor añade al manifiesto: el servicio de Firebase y sus ajustes sin analítica (copiados del manifiesto de `gplay`) y la vuelta de «Entrar con Imagina» por `<id>://oauth2redirect` sin Auth Tab. |
 | `app/src/imagina/res/values/setup.xml` | Marca y opciones: nombre, identificadores, una sola cuenta y un solo servidor, sin introducción, sin calendario ni contactos, sin enlaces de Nextcloud, colores de Imagina. |
-| `app/src/main/java/build/imagina/cloud/ImaginaSignIn.kt` | «Entrar con Imagina»: OAuth con PKCE contra Imagina (alcance `cloud.devices`) en una Auth Tab que vuelve por `<id>://oauth2redirect`, y la API de dispositivos de Imagina (`POST /api/v1/cloud/devices`), que da la dirección de la nube y una contraseña de aplicación propia de este móvil con el nombre que la persona le puso. Si la persona cancela o Imagina rechaza el acceso (sin plaza en un Cloud, Cloud sin preparar…), un diálogo lo dice con el texto de Imagina y ofrece volver a intentarlo o salir. |
+| `app/src/main/java/build/imagina/cloud/ImaginaSignIn.kt` | «Entrar con Imagina»: OAuth con PKCE contra Imagina (alcance `cloud.devices`) en una Auth Tab que vuelve por `<id>://oauth2redirect`, y la API de dispositivos de Imagina (`POST /api/v1/cloud/devices`), que da la dirección de la nube y una contraseña de aplicación propia de este móvil con el nombre que la persona le puso. Guarda el dispositivo y los tokens con `ImaginaDevice` y desconecta antes el de un acceso anterior. Si la persona cancela o Imagina rechaza el acceso (sin plaza en un Cloud, Cloud sin preparar…), un diálogo lo dice con el texto de Imagina y ofrece volver a intentarlo o salir. |
+| `app/src/main/java/build/imagina/cloud/ImaginaDevice.kt` | El dispositivo en Imagina (ver «El dispositivo en Imagina»): guarda su id y los tokens OAuth, lo desconecta (`DELETE /api/v1/cloud/devices/{id}`) al quitar la cuenta o al volver a entrar, y `ImaginaDeviceWork`, el trabajo periódico que renueva los tokens y recoge los dispositivos de cuentas ya quitadas. |
+| `app/src/main/java/build/imagina/cloud/ImaginaApi.kt` | Las peticiones HTTPS a Imagina (identidad y API de dispositivos) y los tokens (`ImaginaTokens`), compartidos por el acceso y el dispositivo. |
+| `app/src/main/java/build/imagina/cloud/ImaginaAccount.kt` | Cómo se ve una cuenta: el nombre de la persona (o nada) donde Nextcloud muestra «usuario@servidor» (ver «Nombre de la cuenta»). |
 | `app/src/main/res/values/imagina.xml` | Valores por defecto (vacíos) de los recursos que usa `ImaginaSignIn`, para que las demás versiones compilen igual. |
 | `app/src/imagina/res/drawable/`, `mipmap-anydpi/` | Imágenes de marca generadas (ver abajo). |
 | `app/src/imagina/res/values*/strings_rebrand.xml` | Textos con «Nextcloud» en todos los idiomas, generados (ver abajo). |
@@ -85,7 +91,7 @@ Copia de `app/src/main/res/values*/strings.xml` los textos que dicen «Nextcloud
 ## Actualizar a una nueva versión de Nextcloud
 
 1. `git fetch upstream --tags` y `git merge stable-<nueva>` sobre `main`.
-2. Cambiar `NEXTCLOUD_ANDROID_TAG` en `imagina/imagina.properties`. Los conflictos solo pueden venir de los ficheros de la tabla. En `AuthenticatorActivity.java`, conservar los tres enganches marcados.
+2. Cambiar `NEXTCLOUD_ANDROID_TAG` en `imagina/imagina.properties`. Los conflictos solo pueden venir de los ficheros de la tabla. En `AuthenticatorActivity.java`, conservar los tres enganches marcados; en los demás, los marcados «Imagina (IMAGINA.md)» (`grep -rn "Imagina (IMAGINA.md)" app/src`).
 3. Revisar las claves nuevas o renombradas de la marca: `git diff stable-<anterior> stable-<nueva> -- app/src/main/res/values/setup.xml` y llevar a `app/src/imagina/res/values/setup.xml` lo que haga falta (sobre todo identificadores y autoridades nuevos).
 4. Revisar imágenes de marca nuevas: `git diff --stat stable-<anterior> stable-<nueva> -- app/src/main/res/drawable app/src/main/res/mipmap-anydpi`; si aparece una con el logo de Nextcloud, añadirla a `imagina/generate-resources.sh`.
 5. Comprobar que `src/gplay/java` sigue teniendo las clases de variante (`VariantComponentsModule`, `PushUtils`…) y llevar a `app/src/imagina/AndroidManifest.xml` lo que cambie en `app/src/gplay/AndroidManifest.xml` (servicio de Firebase, ajustes).
@@ -95,6 +101,24 @@ Copia de `app/src/main/res/values*/strings.xml` los textos que dicen «Nextcloud
 
 `.github/workflows/imagina.yml` (GitHub Actions del repositorio público `efrain-salas/imagina-cloud-android`): compila la APK de depuración en cada subida a `main` (queda como artefacto 14 días) y cada lunes abre una incidencia si Nextcloud ha publicado una versión posterior a `NEXTCLOUD_ANDROID_TAG`. El `google-services.json` llega del secreto `GOOGLE_SERVICES_JSON` del repositorio. Los flujos de Nextcloud que trae el fork están desactivados en GitHub (`gh workflow disable`), porque son para su repositorio. La firma de publicación llegará con la cuenta de Google Play (C11.6).
 
+## El dispositivo en Imagina
+
+«Entrar con Imagina» crea un dispositivo en Imagina («Mi cuenta», `POST /api/v1/cloud/devices`). Para poder desconectarlo después, `ImaginaDevice` guarda, por cada nombre de usuario de Nextcloud, el id del dispositivo y los tokens OAuth del acceso (el de acceso dura 15 minutos; el de renovación, 7 días y se cambia en cada renovación) en unas preferencias privadas de la app (`imagina_device`, sin cifrar: la app no usa `androidx.security` y no permite copias de seguridad, así que no salen del móvil; Nextcloud guarda igual la contraseña de aplicación en el `AccountManager`).
+
+- **Quitar la cuenta en la app**: `AccountRemovalWork` (el mismo trabajo del borrado remoto) llama al final a `ImaginaDevice.accountRemoved`, que renueva el token si hace falta, borra el dispositivo en Imagina y olvida lo guardado. Es de mejor esfuerzo: si no hay conexión, lo recoge el trabajo periódico.
+- **Volver a entrar**: antes de crear el dispositivo nuevo, se desconectan los guardados (con el token recién conseguido y, si Imagina no lo acepta, con los suyos).
+- **Trabajo periódico** (`ImaginaDeviceWork`, cada 2 días con red; empieza al entrar): renueva los tokens mientras la cuenta existe, para que el de renovación no caduque a los 7 días, y desconecta el dispositivo de una cuenta que ya no está (quitada desde los Ajustes de Android, por ejemplo) pasados 10 minutos de crearse. Se cancela solo cuando no queda nada guardado.
+- Si el token de renovación ya no vale, no se puede borrar el dispositivo desde la app: se olvida y la persona lo desconecta en «Mi cuenta».
+
+## Nombre de la cuenta
+
+Los usuarios de Nextcloud de Imagina son números (el id de usuario de Imagina), así que el nombre de la cuenta de Nextcloud, «1@cloud.imagina.build», no le dice nada a la persona. El nombre de la cuenta **no cambia** (Nextcloud lo usa de clave de todo); `ImaginaAccount` hace que, en la versión de Imagina, las pantallas enseñen el nombre que Nextcloud guardó al crear la cuenta (`UserAccountManager.getDisplayName`), o nada si no hay:
+
+- Con `ImaginaAccount.label(user)`: el subtítulo de las notificaciones de Nextcloud (push y detección de carpetas multimedia) y el resumen de la raíz en la app de Ficheros de Android.
+- Con `ImaginaAccount.setAccountLine(vista, texto)`: la línea bajo el nombre en el selector de cuenta, la lista de cuentas, el diálogo de quitar la cuenta y el perfil. Se oculta, porque el nombre ya está encima.
+
+Con otra versión (`imagina_auth_host` vacío) todo sigue como en Nextcloud. Sin enganche, y por tanto sin cambiar, quedan los sitios que solo se ven con varias cuentas (lista de subidas, widget del panel), el diálogo de inicio de sesión único para otras apps de Nextcloud (`SsoGrantPermissionActivity`), un aviso poco frecuente de `ErrorsWhileCopyingHandlerActivity`, y la pantalla de cuentas de Android (Ajustes › Contraseñas y cuentas), que enseña el nombre de la cuenta tal cual.
+
 ## Notificaciones
 
 Las notificaciones llegan por Firebase Cloud Messaging a través del servidor de notificaciones de Imagina (C7.10), no del de Nextcloud. La app usa el código de la versión de Google Play de Nextcloud (`src/gplay/java`), que registra el móvil en ese servidor al entrar. El proyecto de Firebase es `imagina-84bd9` y su `google-services.json` (app `build.imagina.cloud`) va en `app/src/imagina/`, fuera de git: se descarga de la consola de Firebase (Configuración del proyecto › Tus apps). Como en Nextcloud, sus valores pasan a recursos sin el plugin de Google Services (`imagina/flavor.gradle`). Sin el fichero la app compila igual, sin notificaciones.
@@ -102,5 +126,6 @@ Las notificaciones llegan por Firebase Cloud Messaging a través del servidor de
 ## Pendiente para la app de verdad
 
 - Probar las notificaciones con un móvil real (un fichero compartido y una mención).
-- Al quitar la cuenta en la app, desconectar el dispositivo en Imagina (`DELETE /api/v1/cloud/devices/{id}`); hoy queda conectado en «Mi cuenta» hasta que se desconecta desde allí.
+- Probar en el emulador, contra producción, el dispositivo y el nombre de la cuenta: entrar, quitar la cuenta en la app y ver que el dispositivo desaparece de «Mi cuenta»; entrar dos veces y ver que no queda el viejo; ver el nombre (no «1@cloud.imagina.build») en una notificación, el selector de cuenta, la lista de cuentas y la app de Ficheros.
+- Los dispositivos creados con versiones anteriores a esta no tienen el id guardado: quitar la cuenta de esa instalación no los desconecta (se desconectan en «Mi cuenta»). Tampoco una reinstalación, que borra lo guardado: para ese caso Imagina podría sustituir el dispositivo anterior del mismo nombre y plataforma.
 - Firma de publicación y ficha de Google Play (con el aviso de que no es la app oficial).

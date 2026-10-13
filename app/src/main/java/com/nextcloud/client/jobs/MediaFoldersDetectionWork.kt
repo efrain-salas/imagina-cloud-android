@@ -25,6 +25,7 @@ import android.text.TextUtils
 import androidx.core.app.NotificationCompat
 import androidx.work.Worker
 import androidx.work.WorkerParameters
+import build.imagina.cloud.ImaginaAccount
 import com.google.gson.Gson
 import com.nextcloud.client.account.User
 import com.nextcloud.client.account.UserAccountManager
@@ -215,7 +216,8 @@ class MediaFoldersDetectionWork(
         )
             .setSmallIcon(R.drawable.notification_icon)
             .setLargeIcon(BitmapFactory.decodeResource(context.resources, R.drawable.notification_icon))
-            .setSubText(user.accountName)
+            // Imagina (IMAGINA.md): the person's name instead of «user@host»
+            .setSubText(ImaginaAccount.label(user))
             .setContentTitle(contentTitle)
             .setContentText(subtitle)
             .setAutoCancel(true)

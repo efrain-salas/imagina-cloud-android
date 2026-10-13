@@ -12,6 +12,7 @@ import android.content.Context;
 import android.database.MatrixCursor;
 import android.provider.DocumentsContract.Root;
 
+import build.imagina.cloud.ImaginaAccount;
 import com.nextcloud.client.account.User;
 import com.owncloud.android.R;
 import com.owncloud.android.providers.DocumentsStorageProvider;
@@ -43,7 +44,8 @@ public class RootCursor extends MatrixCursor {
 
         newRow().add(Root.COLUMN_ROOT_ID, user.getAccountName())
             .add(Root.COLUMN_DOCUMENT_ID, document.getDocumentId())
-            .add(Root.COLUMN_SUMMARY, user.getAccountName())
+            // Imagina (IMAGINA.md): the person's name instead of «user@host»
+            .add(Root.COLUMN_SUMMARY, ImaginaAccount.label(user))
             .add(Root.COLUMN_TITLE, context.getString(R.string.app_name))
             .add(Root.COLUMN_ICON, R.mipmap.ic_launcher)
             .add(Root.COLUMN_FLAGS, rootFlags);

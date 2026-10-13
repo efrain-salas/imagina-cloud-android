@@ -16,6 +16,7 @@ import android.content.Context
 import android.text.TextUtils
 import androidx.work.Worker
 import androidx.work.WorkerParameters
+import build.imagina.cloud.ImaginaDevice
 import com.google.gson.Gson
 import com.nextcloud.client.account.User
 import com.nextcloud.client.account.UserAccountManager
@@ -143,6 +144,9 @@ class AccountRemovalWork(
         if (userRemoved) {
             eventBus.post(AccountRemovedEvent())
         }
+
+        // Imagina (IMAGINA.md): disconnect this device in Imagina, now that the account is gone
+        ImaginaDevice.accountRemoved(context, user.accountName)
 
         return Result.success()
     }
